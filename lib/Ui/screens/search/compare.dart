@@ -357,6 +357,6 @@ class compareScreenState extends State<compareScreen> {
 }
 
 sortByRate(List currentItems) {
-  currentItems.sort((a, b) => a.rateBase.compareTo(b.rateBase));
+  currentItems.sort((b, a) => a.rateBase.compareTo(b.rateBase));
   return currentItems;
 }
