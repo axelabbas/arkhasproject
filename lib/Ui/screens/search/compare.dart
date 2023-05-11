@@ -135,35 +135,59 @@ class compareScreenState extends State<compareScreen> {
                   if (snapshot.hasError) {
                     return Center(child: Text("${snapshot.error}"));
                   } else if (snapshot.hasData) {
-                    return Column(
+                    return Stack(
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25)),
-                          margin: EdgeInsets.only(bottom: 10, top: 5),
-                          height: 40,
-                          child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: platforms.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
-                                  child: categoryCard(
-                                      platforms.keys.elementAt(index)),
-                                );
-                              }),
+                        Positioned(
+                          top: 45,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height,
+                            child: ScrollConfiguration(
+                              behavior: ScrollConfiguration.of(context)
+                                  .copyWith(scrollbars: false),
+                              child: ListView.builder(
+                                itemCount: currentItems.length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 10),
+                                    child: testItem(currentItems[index]),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
                         ),
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: currentItems.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 10),
-                                child: testItem(currentItems[index]),
-                              );
-                            },
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(.2),
+                                  blurRadius: 3,
+                                  offset: Offset(0, 5),
+                                ),
+                              ],
+                              color: Color.fromRGBO(247, 247, 247, 1),
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(25),
+                                  bottomRight: Radius.circular(25))),
+                          child: ScrollConfiguration(
+                            behavior: ScrollConfiguration.of(context)
+                                .copyWith(scrollbars: false),
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: platforms.length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                    ),
+                                    child: categoryCard(
+                                        platforms.keys.elementAt(index)),
+                                  );
+                                }),
                           ),
                         ),
                       ],
@@ -209,7 +233,7 @@ class compareScreenState extends State<compareScreen> {
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
           color: Colors.grey.withOpacity(.1),
-          borderRadius: BorderRadius.circular(25)),
+          borderRadius: BorderRadius.circular(20)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -303,7 +327,6 @@ class compareScreenState extends State<compareScreen> {
         }),
         child: Container(
           constraints: BoxConstraints(minWidth: 50),
-          height: 25,
           padding: EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
               color: selected == itemName ? Colors.blue : Colors.white,

@@ -38,6 +38,7 @@ searchEbay(query, pageNo) async {
   for (final ele in items!) {
     dom.Document eleHtml = dom.Document.html(ele);
     var price = eleHtml.querySelector(".s-item__price")?.text;
+    
     if (price == null) {
       price = "price not found";
     }
