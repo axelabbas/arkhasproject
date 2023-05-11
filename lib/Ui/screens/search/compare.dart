@@ -1,5 +1,6 @@
 import 'package:arkhasproject/api/alibaba.dart';
 import 'package:arkhasproject/api/aliexpress.dart';
+import 'package:arkhasproject/util/usefulfunctions.dart';
 import 'package:flutter/material.dart';
 import 'package:arkhasproject/api/amazon.dart';
 import 'package:arkhasproject/api/ebay.dart';
@@ -61,6 +62,13 @@ class compareScreenState extends State<compareScreen> {
                                   });
                                 }),
                                 child: Text("Sort by rate")),
+                            ElevatedButton(
+                                onPressed: (() {
+                                  setState(() {
+                                    currentItems = sortByPrice(currentItems);
+                                  });
+                                }),
+                                child: Text("Sort by price")),
                             SizedBox(
                               height: 20,
                             ),
@@ -381,5 +389,11 @@ class compareScreenState extends State<compareScreen> {
 
 sortByRate(List currentItems) {
   currentItems.sort((b, a) => a.rateBase.compareTo(b.rateBase));
+  return currentItems;
+}
+
+sortByPrice(List currentItems) {
+  currentItems
+      .sort((b, a) => stringToPrice(a.price).compareTo(stringToPrice(b.price)));
   return currentItems;
 }
