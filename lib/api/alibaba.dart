@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:arkhasproject/util/usefulfunctions.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
@@ -8,12 +9,13 @@ class alibabaItem {
   late String title;
   late String type;
   late String img;
+  late double price;
   late double rateBase;
-  late String price;
+  late String strPrice;
   late String link;
 
-  alibabaItem(
-      this.title, this.type, this.img, this.rateBase, this.price, this.link);
+  alibabaItem(this.title, this.type, this.img, this.rateBase, this.strPrice,
+      this.link, this.price);
 }
 
 searchAlibaba(query, pageNo) async {
@@ -58,9 +60,13 @@ searchAlibaba(query, pageNo) async {
     } else {
       rateBase = double.tryParse(ele["reviews"]["productScore"])!;
     }
-    var price = ele["tradePrice"]["price"];
+    var strPrice = ele["tradePrice"]["price"];
+    double price = stringToPrice(strPrice);
+
+
     itemLink = "https://$itemLink";
-    itemsList.add(alibabaItem(title, type, img, rateBase, price, itemLink));
+    itemsList.add(
+        alibabaItem(title, type, img, rateBase, strPrice, itemLink, price));
   }
   return itemsList;
 }

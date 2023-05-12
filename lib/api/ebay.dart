@@ -1,3 +1,4 @@
+import 'package:arkhasproject/util/usefulfunctions.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 
@@ -6,11 +7,12 @@ class ebayItem {
   late String type;
   late String img;
   late double rateBase;
-  late String price;
+  late String strPrice;
+  late double price;
   late String link;
 
-  ebayItem(
-      this.title, this.type, this.img, this.rateBase, this.price, this.link);
+  ebayItem(this.title, this.type, this.img, this.rateBase, this.strPrice,
+      this.link, this.price);
 }
 
 searchEbay(query, pageNo) async {
@@ -39,11 +41,13 @@ searchEbay(query, pageNo) async {
       .toList();
   for (final ele in items!) {
     dom.Document eleHtml = dom.Document.html(ele);
-    var price = eleHtml.querySelector(".s-item__price")?.text;
+    var strPrice = eleHtml.querySelector(".s-item__price")?.text;
 
-    if (price == null) {
-      price = "price not found";
+    if (strPrice == null) {
+      strPrice = "price not found";
     }
+    double price = stringToPrice(strPrice);
+
     var itemLink = eleHtml.querySelector(".s-item__link")?.attributes['href'];
 
     var title = eleHtml.querySelector(".s-item__title > span")?.text;
@@ -74,7 +78,8 @@ searchEbay(query, pageNo) async {
     // ratesCount ??= 0;
 
     img ??= "NOT FOUND";
-    itemsList.add(ebayItem(title, "Ebay", img, rateBase, price, itemLink));
+    itemsList
+        .add(ebayItem(title, "Ebay", img, rateBase, strPrice, itemLink, price));
   }
   return itemsList;
 }

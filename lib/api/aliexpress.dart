@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:arkhasproject/util/usefulfunctions.dart';
 import 'package:http/http.dart' as http;
 
 class aliexpressItem {
@@ -7,11 +8,12 @@ class aliexpressItem {
   late String type;
   late String img;
   late double rateBase;
-  late String price;
+  late String strPrice;
+  late double price;
   late String link;
 
-  aliexpressItem(
-      this.title, this.type, this.img, this.rateBase, this.price, this.link);
+  aliexpressItem(this.title, this.type, this.img, this.rateBase, this.strPrice,
+      this.link, this.price);
 }
 
 searchAliExpress(query, pageNo) async {
@@ -49,7 +51,6 @@ searchAliExpress(query, pageNo) async {
     "eventName": "onChange",
     "dependency": []
   });
-  print(body);
   String url = 'https://www.aliexpress.com/fn/search-pc/index';
   final respone = await http.post(Uri.parse(url), headers: headers, body: body);
   var apiResp = json.decode(respone.body);
@@ -57,7 +58,7 @@ searchAliExpress(query, pageNo) async {
   for (Map ele in items!) {
     var productId = ele['productId'];
     var itemLink = "https://www.aliexpress.com/item/$productId.html";
-    var price = ele["prices"]['salePrice']['formattedPrice'];
+    var strPrice = ele["prices"]['salePrice']['formattedPrice'];
     var title = ele["title"]['displayTitle'];
     double rateBase = 0;
 
@@ -80,9 +81,13 @@ searchAliExpress(query, pageNo) async {
     }
     // ratesCount ??= 0;
 
-    price ??= "Price not found";
-    itemsList.add(
-        aliexpressItem(title, "Ali Express", img, rateBase, price, itemLink));
+    if (strPrice == null) {
+      continue;
+    }
+    double price = stringToPrice(strPrice);
+    
+    itemsList.add(aliexpressItem(
+        title, "Ali Express", img, rateBase, strPrice, itemLink, price));
   }
   return itemsList;
 }

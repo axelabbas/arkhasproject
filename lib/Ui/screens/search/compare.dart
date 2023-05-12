@@ -309,7 +309,7 @@ class compareScreenState extends State<compareScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: Text(
-                      "${item.price}",
+                      "${item.strPrice}",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -405,11 +405,16 @@ class compareScreenState extends State<compareScreen> {
 
 sortByRate(List currentItems) {
   currentItems.sort((b, a) => a.rateBase.compareTo(b.rateBase));
+  currentItems.forEach((element) {
+    print(element.rateBase);
+  });
   return currentItems;
 }
 
 sortByPrice(List currentItems) {
-  currentItems
-      .sort((b, a) => stringToPrice(a.price).compareTo(stringToPrice(b.price)));
+  currentItems.sort((a, b) => a.price.compareTo(b.price));
+  currentItems.forEach((element) {
+    print(element.price);
+  });
   return currentItems;
 }
