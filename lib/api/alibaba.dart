@@ -10,8 +10,10 @@ class alibabaItem {
   late String img;
   late double rateBase;
   late String price;
+  late String link;
 
-  alibabaItem(this.title, this.type, this.img, this.rateBase, this.price);
+  alibabaItem(
+      this.title, this.type, this.img, this.rateBase, this.price, this.link);
 }
 
 searchAlibaba(query, pageNo) async {
@@ -45,6 +47,8 @@ searchAlibaba(query, pageNo) async {
     var title = ele["information"]["title"]
         .replaceAll("<strong>", "")
         .replaceAll("</strong>", "");
+    var itemLink =
+        ele["information"]["productUrl"].replaceAll("//www.", "www.");
     var type = "AliBaba";
     var img = "https:" + ele["image"]["mainImage"];
     double rateBase = 0;
@@ -55,7 +59,8 @@ searchAlibaba(query, pageNo) async {
       rateBase = double.tryParse(ele["reviews"]["productScore"])!;
     }
     var price = ele["tradePrice"]["price"];
-    itemsList.add(alibabaItem(title, type, img, rateBase, price));
+    itemLink = "https://$itemLink";
+    itemsList.add(alibabaItem(title, type, img, rateBase, price, itemLink));
   }
   return itemsList;
 }

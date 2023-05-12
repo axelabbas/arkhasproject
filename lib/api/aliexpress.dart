@@ -8,8 +8,10 @@ class aliexpressItem {
   late String img;
   late double rateBase;
   late String price;
+  late String link;
 
-  aliexpressItem(this.title, this.type, this.img, this.rateBase, this.price);
+  aliexpressItem(
+      this.title, this.type, this.img, this.rateBase, this.price, this.link);
 }
 
 searchAliExpress(query, pageNo) async {
@@ -47,11 +49,14 @@ searchAliExpress(query, pageNo) async {
     "eventName": "onChange",
     "dependency": []
   });
+  print(body);
   String url = 'https://www.aliexpress.com/fn/search-pc/index';
   final respone = await http.post(Uri.parse(url), headers: headers, body: body);
   var apiResp = json.decode(respone.body);
   var items = apiResp["data"]["result"]["mods"]["itemList"]["content"];
   for (Map ele in items!) {
+    var productId = ele['productId'];
+    var itemLink = "https://www.aliexpress.com/item/$productId.html";
     var price = ele["prices"]['salePrice']['formattedPrice'];
     var title = ele["title"]['displayTitle'];
     double rateBase = 0;
@@ -76,7 +81,8 @@ searchAliExpress(query, pageNo) async {
     // ratesCount ??= 0;
 
     price ??= "Price not found";
-    itemsList.add(aliexpressItem(title, "Ali Express", img, rateBase, price));
+    itemsList.add(
+        aliexpressItem(title, "Ali Express", img, rateBase, price, itemLink));
   }
   return itemsList;
 }

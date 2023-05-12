@@ -4,6 +4,7 @@ import 'package:arkhasproject/util/usefulfunctions.dart';
 import 'package:flutter/material.dart';
 import 'package:arkhasproject/api/amazon.dart';
 import 'package:arkhasproject/api/ebay.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class compareScreen extends StatefulWidget {
   final String searchQuery;
@@ -23,7 +24,7 @@ class compareScreenState extends State<compareScreen> {
 
   Map platforms = {
     "All": "all",
-    "Amazon": amazonItem,
+    // "Amazon": amazonItem,
     "Ebay": ebayItem,
     "AliExpress": aliexpressItem,
     "AliBaba": alibabaItem
@@ -236,77 +237,92 @@ class compareScreenState extends State<compareScreen> {
     return "done";
   }
 
-  Widget testItem(item) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(.1),
-          borderRadius: BorderRadius.circular(20)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-              margin: EdgeInsets.only(right: 20),
-              width: 175,
-              height: 150,
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(25)),
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(25.0),
-                  child: Image.network(
-                    item.img,
-                  ))),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Text(
-                    "${item.title}",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 20,
+  testItem(item) {
+    Uri link = Uri.parse(item.link);
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: () async {
+        if (await canLaunchUrl(link)) {
+          await launchUrl(link, mode: LaunchMode.externalApplication);
+        } else {
+          print("coudlnt launch $link");
+        }
+      },
+      child: Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            color: Colors.grey.withOpacity(.1),
+            borderRadius: BorderRadius.circular(20)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+                margin: EdgeInsets.only(right: 20),
+                width: 120,
+                height: 150,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(25)),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(25.0),
+                    child: Image.network(
+                      item.img,
+                    ))),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 15),
+                    child: Text(
+                      "${item.title}",
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15,
+                      ),
                     ),
                   ),
-                ),
-                Row(
-                  children: [
-                    starsWidget(item.rateBase, 20, Colors.black),
-                    Text(
-                      "${item.rateBase}",
+                  Row(
+                    children: [
+                      starsWidget(item.rateBase, 20, Colors.black),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        "${item.rateBase}",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    "${item.type}",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 15),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "${item.price}",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 15),
-                    ),
-                  ],
-                ),
-                Text(
-                  "${item.type}",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 15),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 15.0),
-                  child: Text(
-                    "${item.price}",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 20,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

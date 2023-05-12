@@ -7,8 +7,10 @@ class ebayItem {
   late String img;
   late double rateBase;
   late String price;
+  late String link;
 
-  ebayItem(this.title, this.type,this.img, this.rateBase, this.price);
+  ebayItem(
+      this.title, this.type, this.img, this.rateBase, this.price, this.link);
 }
 
 searchEbay(query, pageNo) async {
@@ -38,10 +40,11 @@ searchEbay(query, pageNo) async {
   for (final ele in items!) {
     dom.Document eleHtml = dom.Document.html(ele);
     var price = eleHtml.querySelector(".s-item__price")?.text;
-    
+
     if (price == null) {
       price = "price not found";
     }
+    var itemLink = eleHtml.querySelector(".s-item__link")?.attributes['href'];
 
     var title = eleHtml.querySelector(".s-item__title > span")?.text;
     var rateBase = double.tryParse(
@@ -63,12 +66,15 @@ searchEbay(query, pageNo) async {
     if (title == null) {
       continue;
     }
+    if (itemLink == null) {
+      continue;
+    }
     rateBase ??= 0;
 
     // ratesCount ??= 0;
 
     img ??= "NOT FOUND";
-    itemsList.add(ebayItem(title, "Ebay",img, rateBase, price));
+    itemsList.add(ebayItem(title, "Ebay", img, rateBase, price, itemLink));
   }
   return itemsList;
 }
