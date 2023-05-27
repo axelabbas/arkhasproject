@@ -17,6 +17,7 @@ class compareScreen extends StatefulWidget {
 }
 
 class compareScreenState extends State<compareScreen> {
+  int group = 1;
   final ScrollController _controller = ScrollController();
   late final Future myFuture;
   Map colorsMap = {
@@ -72,39 +73,7 @@ class compareScreenState extends State<compareScreen> {
                         BorderRadius.vertical(top: Radius.circular(25.0)),
                   ),
                   context: context,
-                  builder: (context) => Container(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ElevatedButton(
-                                onPressed: (() {
-                                  setState(() {
-                                    currentItems = sortByRate(currentItems);
-                                  });
-                                }),
-                                child: Text("Sort by rate")),
-                            ElevatedButton(
-                                onPressed: (() {
-                                  setState(() {
-                                    currentItems = sortByPrice(currentItems);
-                                  });
-                                }),
-                                child: Text("Sort by price")),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            ElevatedButton(
-                                onPressed: (() {
-                                  Navigator.pop(context);
-                                }),
-                                child: Text("Done")),
-                            SizedBox(
-                              height: 20,
-                            ),
-                          ],
-                        ),
-                      ));
+                  builder: (context) => bottomSheet(context));
             },
             icon: Icon(Icons.filter_list),
           ),
@@ -355,6 +324,91 @@ class compareScreenState extends State<compareScreen> {
     );
   }
 
+  Widget bottomSheet(BuildContext context) {
+    return StatefulBuilder(builder: (context, state) {
+      return Container(
+        padding: EdgeInsets.all(16),
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ElevatedButton(
+                onPressed: (() {
+                  setState(() {
+                    currentItems = sortByRate(currentItems);
+                  });
+                }),
+                child: Text("Sort by rate")),
+            ElevatedButton(
+                onPressed: (() {
+                  setState(() {
+                    currentItems = sortByPrice(currentItems);
+                  });
+                }),
+                child: Text("Sort by price")),
+            SizedBox(
+              height: 20,
+            ),
+            RadioListTile(
+              title: const Text('Sort Ascending'),
+              groupValue: group,
+              value: 1,
+              onChanged: (value) {
+                setState(() {
+                  updated(state, value);
+                });
+              },
+            ),
+            RadioListTile(
+              title: const Text('Sort Descending'),
+              groupValue: group,
+              value: 0,
+              onChanged: (value) {
+                setState(() {
+                  updated(state, value);
+                });
+              },
+            ),
+            ElevatedButton(
+                onPressed: (() {
+                  Navigator.pop(context);
+                }),
+                child: Text("Done")),
+            SizedBox(
+              height: 20,
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Future<Null> updated(StateSetter updateState, value) async {
+    updateState(() {
+      group = value;
+    });
+  }
+
+  sortByRate(List currentItems) {
+    if (group == 1)
+      currentItems.sort((a, b) => a.rateBase.compareTo(b.rateBase));
+    else {
+      currentItems.sort((b, a) => a.rateBase.compareTo(b.rateBase));
+    }
+    return currentItems;
+  }
+
+  sortByPrice(List currentItems) {
+    if (group == 1)
+      currentItems.sort((a, b) => a.price.compareTo(b.price));
+    else
+      currentItems.sort((b, a) => a.price.compareTo(b.price));
+
+    return currentItems;
+  }
+
   searchInList(List listofItems, String str) {
     if (listofItems.isEmpty) {
       return "EMPTYLIST";
@@ -429,14 +483,4 @@ class compareScreenState extends State<compareScreen> {
       children: starsList,
     );
   }
-}
-
-sortByRate(List currentItems) {
-  currentItems.sort((b, a) => a.rateBase.compareTo(b.rateBase));
-  return currentItems;
-}
-
-sortByPrice(List currentItems) {
-  currentItems.sort((a, b) => a.price.compareTo(b.price));
-  return currentItems;
 }

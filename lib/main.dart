@@ -1,5 +1,4 @@
 import 'package:arkhasproject/Ui/screens/home/homeScreen.dart';
-import 'package:arkhasproject/Ui/screens/search/compare.dart';
 import 'package:flutter/material.dart';
 import 'package:window_size/window_size.dart';
 import 'dart:io';
