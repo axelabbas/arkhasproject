@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:arkhasproject/api/amazon.dart';
 import 'package:arkhasproject/api/ebay.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:arkhasproject/api/tamata.dart';
 
 class compareScreen extends StatefulWidget {
   final String searchQuery;
@@ -16,8 +17,15 @@ class compareScreen extends StatefulWidget {
 }
 
 class compareScreenState extends State<compareScreen> {
+  final ScrollController _controller = ScrollController();
   late final Future myFuture;
-
+  Map colorsMap = {
+    "text": Color(0xFFffffff),
+    "background": Color(0xFF140e15),
+    "primary": Color(0xFFa518d8),
+    "secondary": Color(0xFF5e2f6f),
+    "accent": Color(0xFFad0de7)
+  };
   List itemsList = [];
   List currentItems = [];
   String selected = "All";
@@ -27,8 +35,17 @@ class compareScreenState extends State<compareScreen> {
     // "Amazon": amazonItem,
     "Ebay": ebayItem,
     "AliExpress": aliexpressItem,
-    "AliBaba": alibabaItem
+    "AliBaba": alibabaItem,
+    "Tamata": tamataItem
   };
+  void scrollUp() {
+    _controller.animateTo(
+      _controller.position.minScrollExtent,
+      duration: Duration(seconds: 2),
+      curve: Curves.fastOutSlowIn,
+    );
+    // _controller.jumpTo(_controller.position.minScrollExtent);
+  }
 
   @override
   void initState() {
@@ -38,6 +55,10 @@ class compareScreenState extends State<compareScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: scrollUp,
+        child: Icon(Icons.arrow_upward),
+      ),
       appBar: AppBar(
         title: Text("Compare"),
         centerTitle: true,
@@ -155,6 +176,7 @@ class compareScreenState extends State<compareScreen> {
                               behavior: ScrollConfiguration.of(context)
                                   .copyWith(scrollbars: false),
                               child: ListView.builder(
+                                controller: _controller,
                                 itemCount: currentItems.length,
                                 itemBuilder: (context, index) {
                                   return Padding(
@@ -227,9 +249,15 @@ class compareScreenState extends State<compareScreen> {
     List<dynamic> allItems = [];
     // var amazonItems = await searchAmazon(query, 1);
     var aliexpressItems = await searchAliExpress(query, 1);
+    var tamataItems = await searchTamata(query, 1);
     var alibabaItems = await searchAlibaba(query, 1);
     var ebayItems = await searchEbay(query, 1);
-    allItems = [...alibabaItems, ...aliexpressItems, ...ebayItems];
+    allItems = [
+      ...alibabaItems,
+      ...aliexpressItems,
+      ...ebayItems,
+      ...tamataItems
+    ];
     // allItems = ebayItems;
     allItems.shuffle();
     itemsList = allItems;
@@ -405,16 +433,10 @@ class compareScreenState extends State<compareScreen> {
 
 sortByRate(List currentItems) {
   currentItems.sort((b, a) => a.rateBase.compareTo(b.rateBase));
-  currentItems.forEach((element) {
-    print(element.rateBase);
-  });
   return currentItems;
 }
 
 sortByPrice(List currentItems) {
   currentItems.sort((a, b) => a.price.compareTo(b.price));
-  currentItems.forEach((element) {
-    print(element.price);
-  });
   return currentItems;
 }

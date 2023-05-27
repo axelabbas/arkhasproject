@@ -6,6 +6,8 @@ double stringToPrice(String price) {
   price = price.replaceAll("\$", "");
   price = price.replaceAll("US ", "");
   price = price.replaceAll(",", "");
+  price = price.replaceAll("٬", "");
+  price = price.replaceAll("IQD ", "");
   if (price.contains("to")) {
     var prices = price.split(" to ");
     var price1 = double.parse(prices[0]);
@@ -13,7 +15,6 @@ double stringToPrice(String price) {
     intPrice = averagePrice(price1, price2);
   } else if (price.contains("-")) {
     var prices = price.split("-");
-    print(prices);
     var price1 = double.parse(prices[0]);
     var price2 = double.parse(prices[1]);
     intPrice = averagePrice(price1, price2);
