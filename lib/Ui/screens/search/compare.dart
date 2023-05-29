@@ -1,3 +1,4 @@
+import 'package:arkhasproject/Ui/screens/widgets/loadingWidgets.dart';
 import 'package:arkhasproject/api/alibaba.dart';
 import 'package:arkhasproject/api/aliexpress.dart';
 import 'package:arkhasproject/util/usefulfunctions.dart';
@@ -7,6 +8,8 @@ import 'package:arkhasproject/api/ebay.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:arkhasproject/api/tamata.dart';
+
+import '../widgets/starsWidget.dart';
 
 class compareScreen extends StatefulWidget {
   final String searchQuery;
@@ -33,14 +36,7 @@ class compareScreenState extends State<compareScreen> {
   List currentItems = [];
   String selected = "All";
 
-  Map platforms = {
-    "All": "all",
-    // "Amazon": amazonItem,
-    "Ebay": ebayItem,
-    "AliExpress": aliexpressItem,
-    "AliBaba": alibabaItem,
-    "Tamata": tamataItem
-  };
+  List platforms = ["All", "AliBaba", "Tamata", "AliExpress", "Ebay"];
   void scrollUp() {
     _controller.animateTo(
       _controller.position.minScrollExtent,
@@ -165,7 +161,7 @@ class compareScreenState extends State<compareScreen> {
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 10),
-                                    child: testItem(currentItems[index]),
+                                    child: searchItem(currentItems[index]),
                                   );
                                 },
                               ),
@@ -198,8 +194,7 @@ class compareScreenState extends State<compareScreen> {
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 10,
                                     ),
-                                    child: categoryCard(
-                                        platforms.keys.elementAt(index)),
+                                    child: categoryCard(platforms[index]),
                                   );
                                 }),
                           ),
@@ -207,20 +202,9 @@ class compareScreenState extends State<compareScreen> {
                       ],
                     );
                   } else {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(),
-                        ],
-                      ),
-                    );
+                    return loadingWidget();
                   }
-                }
-                //body after loading
-
-                ),
+                }),
           ),
         ],
       ),
@@ -247,7 +231,7 @@ class compareScreenState extends State<compareScreen> {
     return "done";
   }
 
-  testItem(item) {
+  searchItem(item) {
     Uri link = Uri.parse(item.link);
     return InkWell(
       borderRadius: BorderRadius.circular(20),
@@ -462,7 +446,7 @@ class compareScreenState extends State<compareScreen> {
         borderRadius: BorderRadius.circular(25),
         onTap: (() {
           setState(() {
-            changeItems(platforms[itemName]);
+            changeItems(itemName);
             selected = itemName;
           });
         }),
@@ -482,40 +466,13 @@ class compareScreenState extends State<compareScreen> {
   }
 
   changeItems(selectedType) {
-    if (!(selectedType == 'all')) {
-      currentItems = itemsList
-          .where((element) => element.runtimeType == selectedType)
-          .toList();
+    if (!(selectedType == 'All')) {
+      currentItems =
+          itemsList.where((element) => element.type == selectedType).toList();
     } else {
       currentItems = itemsList;
     }
   }
 
-  starsWidget(double stars, double size, Color color) {
-    List<Widget> starsList = [];
-    for (double i = 0; i < 5; i++) {
-      if (stars - i >= 1) {
-        starsList.add(Icon(
-          Icons.star,
-          size: size,
-          color: color,
-        ));
-      } else if (stars - i <= 0) {
-        starsList.add(Icon(
-          Icons.star_border,
-          size: size,
-          color: color,
-        ));
-      } else {
-        starsList.add(Icon(
-          Icons.star_half,
-          size: size,
-          color: color,
-        ));
-      }
-    }
-    return Row(
-      children: starsList,
-    );
-  }
+
 }

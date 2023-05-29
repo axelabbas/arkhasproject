@@ -1,19 +1,9 @@
+import 'package:arkhasproject/api/itemClass.dart';
 import 'package:arkhasproject/util/usefulfunctions.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 
-class ebayItem {
-  late String title;
-  late String type;
-  late String img;
-  late double rateBase;
-  late String strPrice;
-  late double price;
-  late String link;
 
-  ebayItem(this.title, this.type, this.img, this.rateBase, this.strPrice,
-      this.link, this.price);
-}
 
 searchEbay(query, pageNo) async {
   var headers = {
@@ -29,7 +19,7 @@ searchEbay(query, pageNo) async {
     "user-agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
   };
-  List<ebayItem> itemsList = [];
+  List<item> itemsList = [];
   String url = "https://www.ebay.com/sch/i.html?_nkw=$query&_pgn=$pageNo";
   final respone = await http.get(Uri.parse(url), headers: headers);
   dom.Document html = dom.Document.html(respone.body);
@@ -39,47 +29,48 @@ searchEbay(query, pageNo) async {
       ?.children
       .map((e) => e.innerHtml.trim())
       .toList();
-  for (final ele in items!) {
-    dom.Document eleHtml = dom.Document.html(ele);
-    var strPrice = eleHtml.querySelector(".s-item__price")?.text;
+  if (items != null)
+    for (final ele in items) {
+      dom.Document eleHtml = dom.Document.html(ele);
+      var strPrice = eleHtml.querySelector(".s-item__price")?.text;
 
-    if (strPrice == null) {
-      strPrice = "price not found";
+      if (strPrice == null) {
+        strPrice = "price not found";
+      }
+      double price = stringToPrice(strPrice);
+
+      var itemLink = eleHtml.querySelector(".s-item__link")?.attributes['href'];
+
+      var title = eleHtml.querySelector(".s-item__title > span")?.text;
+      var rateBase = double.tryParse(
+          eleHtml.querySelector(".x-star-rating > span")?.text.split(" ")[0] ??
+              "");
+      // var ratesCount = int.tryParse(eleHtml
+      //         .querySelector("div > span > a > span")
+      //         ?.innerHtml
+      //         .trim()
+      //         .replaceAll("(", "")
+      //         .replaceAll(")", "") ??
+      //     "");
+
+      var img = eleHtml
+          .querySelector(".s-item__image-wrapper > img")
+          ?.attributes["src"]!
+          .trim();
+
+      if (title == null) {
+        continue;
+      }
+      if (itemLink == null) {
+        continue;
+      }
+      rateBase ??= 0;
+
+      // ratesCount ??= 0;
+
+      img ??= "NOT FOUND";
+      itemsList.add(
+          item(title, "Ebay", img, rateBase, strPrice, itemLink, price));
     }
-    double price = stringToPrice(strPrice);
-
-    var itemLink = eleHtml.querySelector(".s-item__link")?.attributes['href'];
-
-    var title = eleHtml.querySelector(".s-item__title > span")?.text;
-    var rateBase = double.tryParse(
-        eleHtml.querySelector(".x-star-rating > span")?.text.split(" ")[0] ??
-            "");
-    // var ratesCount = int.tryParse(eleHtml
-    //         .querySelector("div > span > a > span")
-    //         ?.innerHtml
-    //         .trim()
-    //         .replaceAll("(", "")
-    //         .replaceAll(")", "") ??
-    //     "");
-
-    var img = eleHtml
-        .querySelector(".s-item__image-wrapper > img")
-        ?.attributes["src"]!
-        .trim();
-
-    if (title == null) {
-      continue;
-    }
-    if (itemLink == null) {
-      continue;
-    }
-    rateBase ??= 0;
-
-    // ratesCount ??= 0;
-
-    img ??= "NOT FOUND";
-    itemsList
-        .add(ebayItem(title, "Ebay", img, rateBase, strPrice, itemLink, price));
-  }
   return itemsList;
 }

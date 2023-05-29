@@ -1,15 +1,8 @@
+import 'package:arkhasproject/util/usefulfunctions.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 
-class amazonItem {
-  late String title;
-  late String type;
-  late String img;
-  late double rateBase;
-  late String price;
-
-  amazonItem(this.title, this.type,this.img, this.rateBase, this.price);
-}
+import 'itemClass.dart';
 
 searchAmazon(query, pageNo) async {
   var headers = {
@@ -42,7 +35,7 @@ searchAmazon(query, pageNo) async {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36",
     "viewport-width": "847"
   };
-  List<amazonItem> itemsList = [];
+  List<item> itemsList = [];
   String url = "https://www.amazon.com/s?k=${query}&page=$pageNo";
   final respone = await http.get(Uri.parse(url), headers: headers);
   dom.Document html = dom.Document.html(respone.body);
@@ -52,45 +45,48 @@ searchAmazon(query, pageNo) async {
       ?.children
       .map((e) => e.innerHtml.trim())
       .toList();
-  for (final ele in items!) {
-    dom.Document eleHtml = dom.Document.html(ele);
-    var price = eleHtml
-        .querySelector("span.a-price > span.a-offscreen")
-        ?.innerHtml
-        .trim();
-    var title = eleHtml
-        .querySelector("div.a-section > h2 > a > span")
-        ?.innerHtml
-        .trim();
-    var rateBase = double.tryParse(eleHtml
-            .querySelector("i > .a-icon-alt")
-            ?.innerHtml
-            .trim()
-            .split(" ")[0] ??
-        "");
-    // var ratesCount = int.tryParse(eleHtml
-    //         .querySelector("div > span > a > span")
-    //         ?.innerHtml
-    //         .trim()
-    //         .replaceAll("(", "")
-    //         .replaceAll(")", "") ??
-    //     "");
+  if (items != null)
+    for (final ele in items) {
+      dom.Document eleHtml = dom.Document.html(ele);
+      var strPrice = eleHtml
+          .querySelector("span.a-price > span.a-offscreen")
+          ?.innerHtml
+          .trim();
+      var title = eleHtml
+          .querySelector("div.a-section > h2 > a > span")
+          ?.innerHtml
+          .trim();
+      var rateBase = double.tryParse(eleHtml
+              .querySelector("i > .a-icon-alt")
+              ?.innerHtml
+              .trim()
+              .split(" ")[0] ??
+          "");
+      // var ratesCount = int.tryParse(eleHtml
+      //         .querySelector("div > span > a > span")
+      //         ?.innerHtml
+      //         .trim()
+      //         .replaceAll("(", "")
+      //         .replaceAll(")", "") ??
+      //     "");
 
-    var img = eleHtml
-        .querySelector(".a-section > .s-image")
-        ?.attributes["src"]!
-        .trim();
+      var img = eleHtml
+          .querySelector(".a-section > .s-image")
+          ?.attributes["src"]!
+          .trim();
 
-    if (title == null) {
-      continue;
+      if (title == null) {
+        continue;
+      }
+      rateBase ??= 0;
+
+      // ratesCount ??= 0;
+
+      strPrice ??= "Price not found";
+      img ??= "NOT FOUND";
+      double price = stringToPrice(strPrice);
+      itemsList.add(
+          item(title, "Amazon", img, rateBase, strPrice, "testlink", price));
     }
-    rateBase ??= 0;
-
-    // ratesCount ??= 0;
-
-    price ??= "Price not found";
-    img ??= "NOT FOUND";
-    itemsList.add(amazonItem(title, "Amazon" ,img, rateBase, price));
-  }
   return itemsList;
 }

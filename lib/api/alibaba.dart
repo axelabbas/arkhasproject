@@ -1,22 +1,12 @@
 import 'dart:convert';
 
+import 'package:arkhasproject/api/itemClass.dart';
 import 'package:arkhasproject/util/usefulfunctions.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
 
-class alibabaItem {
-  late String title;
-  late String type;
-  late String img;
-  late double price;
-  late double rateBase;
-  late String strPrice;
-  late String link;
 
-  alibabaItem(this.title, this.type, this.img, this.rateBase, this.strPrice,
-      this.link, this.price);
-}
 
 searchAlibaba(query, pageNo) async {
   var headers = {
@@ -34,7 +24,7 @@ searchAlibaba(query, pageNo) async {
     "user-agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
   };
-  List<alibabaItem> itemsList = [];
+  List<item> itemsList = [];
   String url =
       "https://en.alibaba.com/trade/search?spm=a2700.galleryofferlist.0.0.561f50bbOksSmA&fsb=y&IndexArea=product_en&keywords=$query&tab=all&viewtype=L&&page=${pageNo + 1}";
   final respone = await http.get(Uri.parse(url), headers: headers);
@@ -43,30 +33,27 @@ searchAlibaba(query, pageNo) async {
   var js = json.decode(script
       .split("window.__page__data__config = ")[1]
       .split("window.__page__data = window.__page__data__config.props")[0]);
-  var listOfProducts = js["props"]["offerResultData"]["offerList"];
+  var listOfProducts = js["props"]["offerResultData"]["offers"];
+  if (listOfProducts != null)
+    for (final ele in listOfProducts) {
+      var title =
+          ele["title"].replaceAll("<strong>", "").replaceAll("</strong>", "");
+      var itemLink = ele["productUrl"].replaceAll("//www.", "www.");
+      var type = "AliBaba";
+      var img = "https:" + ele["mainImage"];
+      double rateBase = 0;
 
-  for (final ele in listOfProducts) {
-    var title = ele["information"]["title"]
-        .replaceAll("<strong>", "")
-        .replaceAll("</strong>", "");
-    var itemLink =
-        ele["information"]["productUrl"].replaceAll("//www.", "www.");
-    var type = "AliBaba";
-    var img = "https:" + ele["image"]["mainImage"];
-    double rateBase = 0;
+      if (ele["supplierService"] == null) {
+        rateBase = 0;
+      } else {
+        rateBase = double.tryParse(ele["supplierService"])!;
+      }
+      var strPrice = ele["price"];
+      double price = stringToPrice(strPrice);
 
-    if (ele["reviews"]["productScore"] == null) {
-      rateBase = 0;
-    } else {
-      rateBase = double.tryParse(ele["reviews"]["productScore"])!;
+      itemLink = "https://$itemLink";
+      itemsList.add(
+          item(title, type, img, rateBase, strPrice, itemLink, price));
     }
-    var strPrice = ele["tradePrice"]["price"];
-    double price = stringToPrice(strPrice);
-
-
-    itemLink = "https://$itemLink";
-    itemsList.add(
-        alibabaItem(title, type, img, rateBase, strPrice, itemLink, price));
-  }
   return itemsList;
 }
