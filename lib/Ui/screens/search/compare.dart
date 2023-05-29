@@ -4,6 +4,7 @@ import 'package:arkhasproject/util/usefulfunctions.dart';
 import 'package:flutter/material.dart';
 import 'package:arkhasproject/api/amazon.dart';
 import 'package:arkhasproject/api/ebay.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:arkhasproject/api/tamata.dart';
 
@@ -18,6 +19,7 @@ class compareScreen extends StatefulWidget {
 
 class compareScreenState extends State<compareScreen> {
   int group = 1;
+  bool finishedLoading = false;
   final ScrollController _controller = ScrollController();
   late final Future myFuture;
   Map colorsMap = {
@@ -56,9 +58,12 @@ class compareScreenState extends State<compareScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: scrollUp,
-        child: Icon(Icons.arrow_upward),
+      floatingActionButton: Visibility(
+        visible: finishedLoading,
+        child: FloatingActionButton(
+          onPressed: scrollUp,
+          child: Icon(Icons.arrow_upward),
+        ),
       ),
       appBar: AppBar(
         title: Text("Compare"),
@@ -66,14 +71,18 @@ class compareScreenState extends State<compareScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              showModalBottomSheet(
-                  isScrollControlled: true,
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(25.0)),
-                  ),
-                  context: context,
-                  builder: (context) => bottomSheet(context));
+              if (finishedLoading) {
+                showModalBottomSheet(
+                    isScrollControlled: true,
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(25.0)),
+                    ),
+                    context: context,
+                    builder: (context) => bottomSheet(context));
+              } else {
+                Null;
+              }
             },
             icon: Icon(Icons.filter_list),
           ),
@@ -134,6 +143,11 @@ class compareScreenState extends State<compareScreen> {
                   if (snapshot.hasError) {
                     return Center(child: Text("${snapshot.error}"));
                   } else if (snapshot.hasData) {
+                    // schedule set state until the building has been finished
+                    SchedulerBinding.instance
+                        .addPostFrameCallback((_) => setState(() {
+                              finishedLoading = true;
+                            }));
                     return Stack(
                       children: [
                         Positioned(
@@ -198,7 +212,6 @@ class compareScreenState extends State<compareScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text("${snapshot.connectionState}"),
                           CircularProgressIndicator(),
                         ],
                       ),
@@ -341,6 +354,9 @@ class compareScreenState extends State<compareScreen> {
                   });
                 }),
                 child: Text("Sort by rate")),
+            SizedBox(
+              height: 10,
+            ),
             ElevatedButton(
                 onPressed: (() {
                   setState(() {
@@ -348,28 +364,47 @@ class compareScreenState extends State<compareScreen> {
                   });
                 }),
                 child: Text("Sort by price")),
-            SizedBox(
-              height: 20,
-            ),
-            RadioListTile(
-              title: const Text('Sort Ascending'),
-              groupValue: group,
-              value: 1,
-              onChanged: (value) {
-                setState(() {
-                  updated(state, value);
-                });
-              },
-            ),
-            RadioListTile(
-              title: const Text('Sort Descending'),
-              groupValue: group,
-              value: 0,
-              onChanged: (value) {
-                setState(() {
-                  updated(state, value);
-                });
-              },
+            Center(
+              child: Container(
+                height: 100,
+                width: 225,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: ListTile(
+                        contentPadding: EdgeInsets.all(0),
+                        leading: Radio(
+                          groupValue: group,
+                          value: 1,
+                          onChanged: (value) {
+                            setState(() {
+                              updated(state, value);
+                            });
+                          },
+                        ),
+                        title: const Text('Sort Ascending'),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListTile(
+                        contentPadding: EdgeInsets.all(0),
+                        title: const Text('Sort Descending'),
+                        leading: Radio(
+                          groupValue: group,
+                          value: 0,
+                          onChanged: (value) {
+                            setState(() {
+                              updated(state, value);
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             ElevatedButton(
                 onPressed: (() {

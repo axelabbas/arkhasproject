@@ -6,7 +6,7 @@ import 'dart:io';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    setWindowTitle("OmeSpam");
+    setWindowTitle("Arkhasly");
     setWindowMaxSize(Size(720, 1100));
   }
 
