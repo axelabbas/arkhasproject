@@ -1,9 +1,7 @@
 import 'package:arkhasproject/Ui/screens/widgets/loadingWidgets.dart';
 import 'package:arkhasproject/api/alibaba.dart';
 import 'package:arkhasproject/api/aliexpress.dart';
-import 'package:arkhasproject/util/usefulfunctions.dart';
 import 'package:flutter/material.dart';
-import 'package:arkhasproject/api/amazon.dart';
 import 'package:arkhasproject/api/ebay.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -13,7 +11,8 @@ import '../widgets/starsWidget.dart';
 
 class compareScreen extends StatefulWidget {
   final String searchQuery;
-  compareScreen({
+  const compareScreen({
+    super.key,
     required this.searchQuery,
   });
   @override
@@ -26,11 +25,11 @@ class compareScreenState extends State<compareScreen> {
   final ScrollController _controller = ScrollController();
   late final Future myFuture;
   Map colorsMap = {
-    "text": Color(0xFFffffff),
-    "background": Color(0xFF140e15),
-    "primary": Color(0xFFa518d8),
-    "secondary": Color(0xFF5e2f6f),
-    "accent": Color(0xFFad0de7)
+    "text": const Color(0xFFffffff),
+    "background": const Color(0xFF140e15),
+    "primary": const Color(0xFFa518d8),
+    "secondary": const Color(0xFF5e2f6f),
+    "accent": const Color(0xFFad0de7)
   };
   List itemsList = [];
   List currentItems = [];
@@ -40,7 +39,7 @@ class compareScreenState extends State<compareScreen> {
   void scrollUp() {
     _controller.animateTo(
       _controller.position.minScrollExtent,
-      duration: Duration(seconds: 2),
+      duration: const Duration(seconds: 2),
       curve: Curves.fastOutSlowIn,
     );
     // _controller.jumpTo(_controller.position.minScrollExtent);
@@ -48,6 +47,7 @@ class compareScreenState extends State<compareScreen> {
 
   @override
   void initState() {
+    super.initState();
     myFuture = getAllResults(widget.searchQuery);
   }
 
@@ -58,11 +58,11 @@ class compareScreenState extends State<compareScreen> {
         visible: finishedLoading,
         child: FloatingActionButton(
           onPressed: scrollUp,
-          child: Icon(Icons.arrow_upward),
+          child: const Icon(Icons.arrow_upward),
         ),
       ),
       appBar: AppBar(
-        title: Text("Compare"),
+        title: const Text("Compare"),
         centerTitle: true,
         actions: [
           IconButton(
@@ -70,7 +70,7 @@ class compareScreenState extends State<compareScreen> {
               if (finishedLoading) {
                 showModalBottomSheet(
                     isScrollControlled: true,
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(25.0)),
                     ),
@@ -80,11 +80,11 @@ class compareScreenState extends State<compareScreen> {
                 Null;
               }
             },
-            icon: Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_list),
           ),
         ],
       ),
-      backgroundColor: Color.fromRGBO(247, 247, 247, 1),
+      backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
       body: Column(
         children: [
           Padding(
@@ -117,10 +117,12 @@ class compareScreenState extends State<compareScreen> {
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                               color: Colors.grey.withOpacity(.2), width: 0.0),
-                          borderRadius: BorderRadius.all(Radius.circular(0.0)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(0.0)),
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(00.0)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(00.0)),
                           borderSide: BorderSide(
                               color: Colors.grey.withOpacity(.2), width: 0.0),
                         ),
@@ -148,7 +150,7 @@ class compareScreenState extends State<compareScreen> {
                       children: [
                         Positioned(
                           top: 45,
-                          child: Container(
+                          child: SizedBox(
                             width: MediaQuery.of(context).size.width,
                             height: MediaQuery.of(context).size.height,
                             child: ScrollConfiguration(
@@ -170,17 +172,17 @@ class compareScreenState extends State<compareScreen> {
                         ),
                         Container(
                           height: 50,
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(.2),
                                   blurRadius: 3,
-                                  offset: Offset(0, 5),
+                                  offset: const Offset(0, 5),
                                 ),
                               ],
-                              color: Color.fromRGBO(247, 247, 247, 1),
-                              borderRadius: BorderRadius.only(
+                              color: const Color.fromRGBO(247, 247, 247, 1),
+                              borderRadius: const BorderRadius.only(
                                   bottomLeft: Radius.circular(25),
                                   bottomRight: Radius.circular(25))),
                           child: ScrollConfiguration(
@@ -202,7 +204,7 @@ class compareScreenState extends State<compareScreen> {
                       ],
                     );
                   } else {
-                    return loadingWidget();
+                    return const loadingWidget();
                   }
                 }),
           ),
@@ -243,16 +245,23 @@ class compareScreenState extends State<compareScreen> {
         }
       },
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(.1),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(.2),
+                blurRadius: 3,
+                offset: const Offset(0, 5),
+              ),
+            ],
+            color: Colors.grey.shade100,
             borderRadius: BorderRadius.circular(20)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-                margin: EdgeInsets.only(right: 20),
+                margin: const EdgeInsets.only(right: 20),
                 width: 120,
                 height: 150,
                 decoration: BoxDecoration(
@@ -274,7 +283,7 @@ class compareScreenState extends State<compareScreen> {
                       "${item.title}",
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 15,
                       ),
@@ -283,14 +292,14 @@ class compareScreenState extends State<compareScreen> {
                   Row(
                     children: [
                       starsWidget(item.rateBase, 20, Colors.black),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       Text(
                         "${item.rateBase}",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 15),
+                        style: const TextStyle(fontSize: 15),
                       ),
                     ],
                   ),
@@ -298,7 +307,7 @@ class compareScreenState extends State<compareScreen> {
                     "${item.type}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 15),
+                    style: const TextStyle(fontSize: 15),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
@@ -306,7 +315,7 @@ class compareScreenState extends State<compareScreen> {
                       "${item.strPrice}",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 20,
                       ),
@@ -324,7 +333,7 @@ class compareScreenState extends State<compareScreen> {
   Widget bottomSheet(BuildContext context) {
     return StatefulBuilder(builder: (context, state) {
       return Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         width: MediaQuery.of(context).size.width,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -337,8 +346,8 @@ class compareScreenState extends State<compareScreen> {
                     currentItems = sortByRate(currentItems);
                   });
                 }),
-                child: Text("Sort by rate")),
-            SizedBox(
+                child: const Text("Sort by rate")),
+            const SizedBox(
               height: 10,
             ),
             ElevatedButton(
@@ -347,9 +356,9 @@ class compareScreenState extends State<compareScreen> {
                     currentItems = sortByPrice(currentItems);
                   });
                 }),
-                child: Text("Sort by price")),
+                child: const Text("Sort by price")),
             Center(
-              child: Container(
+              child: SizedBox(
                 height: 100,
                 width: 225,
                 child: Column(
@@ -358,7 +367,7 @@ class compareScreenState extends State<compareScreen> {
                   children: [
                     Expanded(
                       child: ListTile(
-                        contentPadding: EdgeInsets.all(0),
+                        contentPadding: const EdgeInsets.all(0),
                         leading: Radio(
                           groupValue: group,
                           value: 1,
@@ -373,7 +382,7 @@ class compareScreenState extends State<compareScreen> {
                     ),
                     Expanded(
                       child: ListTile(
-                        contentPadding: EdgeInsets.all(0),
+                        contentPadding: const EdgeInsets.all(0),
                         title: const Text('Sort Descending'),
                         leading: Radio(
                           groupValue: group,
@@ -394,8 +403,8 @@ class compareScreenState extends State<compareScreen> {
                 onPressed: (() {
                   Navigator.pop(context);
                 }),
-                child: Text("Done")),
-            SizedBox(
+                child: const Text("Done")),
+            const SizedBox(
               height: 20,
             ),
           ],
@@ -404,26 +413,27 @@ class compareScreenState extends State<compareScreen> {
     });
   }
 
-  Future<Null> updated(StateSetter updateState, value) async {
+  Future<void> updated(StateSetter updateState, value) async {
     updateState(() {
       group = value;
     });
   }
 
   sortByRate(List currentItems) {
-    if (group == 1)
+    if (group == 1) {
       currentItems.sort((a, b) => a.rateBase.compareTo(b.rateBase));
-    else {
+    } else {
       currentItems.sort((b, a) => a.rateBase.compareTo(b.rateBase));
     }
     return currentItems;
   }
 
   sortByPrice(List currentItems) {
-    if (group == 1)
+    if (group == 1) {
       currentItems.sort((a, b) => a.price.compareTo(b.price));
-    else
+    } else {
       currentItems.sort((b, a) => a.price.compareTo(b.price));
+    }
 
     return currentItems;
   }
@@ -451,11 +461,11 @@ class compareScreenState extends State<compareScreen> {
           });
         }),
         child: Container(
-          constraints: BoxConstraints(minWidth: 50),
-          padding: EdgeInsets.symmetric(horizontal: 10),
+          constraints: const BoxConstraints(minWidth: 50),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
               color: selected == itemName ? Colors.blue : Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(25)),
+              borderRadius: const BorderRadius.all(Radius.circular(25)),
               border: Border.all(color: Colors.black)),
           child: Center(
             child: Text(itemName),
@@ -473,6 +483,4 @@ class compareScreenState extends State<compareScreen> {
       currentItems = itemsList;
     }
   }
-
-
 }

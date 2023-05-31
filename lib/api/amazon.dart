@@ -36,7 +36,7 @@ searchAmazon(query, pageNo) async {
     "viewport-width": "847"
   };
   List<item> itemsList = [];
-  String url = "https://www.amazon.com/s?k=${query}&page=$pageNo";
+  String url = "https://www.amazon.com/s?k=$query&page=$pageNo";
   final respone = await http.get(Uri.parse(url), headers: headers);
   dom.Document html = dom.Document.html(respone.body);
   String selector = "div.s-main-slot.s-result-list.s-search-results.sg-row";
@@ -46,6 +46,7 @@ searchAmazon(query, pageNo) async {
       .map((e) => e.innerHtml.trim())
       .toList();
   if (items != null)
+    // ignore: curly_braces_in_flow_control_structures
     for (final ele in items) {
       dom.Document eleHtml = dom.Document.html(ele);
       var strPrice = eleHtml

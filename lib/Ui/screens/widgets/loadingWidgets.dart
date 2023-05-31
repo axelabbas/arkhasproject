@@ -1,4 +1,3 @@
-import 'package:arkhasproject/Ui/screens/widgets/starsWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -15,7 +14,7 @@ class _loadingWidgetState extends State<loadingWidget> {
     return Stack(children: [
       Positioned(
           top: 45,
-          child: Container(
+          child: SizedBox(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: ScrollConfiguration(
@@ -35,17 +34,17 @@ class _loadingWidgetState extends State<loadingWidget> {
           )),
       Container(
         height: 50,
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(.2),
                 blurRadius: 3,
-                offset: Offset(0, 5),
+                offset: const Offset(0, 5),
               ),
             ],
-            color: Color.fromRGBO(247, 247, 247, 1),
-            borderRadius: BorderRadius.only(
+            color: const Color.fromRGBO(247, 247, 247, 1),
+            borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(25),
                 bottomRight: Radius.circular(25))),
         child: ScrollConfiguration(
@@ -75,13 +74,13 @@ class _loadingWidgetState extends State<loadingWidget> {
         child: Shimmer.fromColors(
           baseColor: Colors.grey[300]!,
           highlightColor: Colors.grey[400]!,
-          period: Duration(seconds: 5),
+          period: const Duration(seconds: 5),
           child: Container(
-            constraints: BoxConstraints(minWidth: 100),
-            padding: EdgeInsets.symmetric(horizontal: 5),
+            constraints: const BoxConstraints(minWidth: 100),
+            padding: const EdgeInsets.symmetric(horizontal: 5),
             decoration: BoxDecoration(
                 color: Colors.grey,
-                borderRadius: BorderRadius.all(Radius.circular(25)),
+                borderRadius: const BorderRadius.all(Radius.circular(25)),
                 border: Border.all(color: Colors.grey.withOpacity(.5))),
           ),
         ),
@@ -94,20 +93,20 @@ class _loadingWidgetState extends State<loadingWidget> {
       borderRadius: BorderRadius.circular(20),
       onTap: () {},
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-            color: Colors.grey.shade700,
+            color: Colors.grey.withOpacity(.4),
             borderRadius: BorderRadius.circular(20)),
         child: Shimmer.fromColors(
           baseColor: Colors.grey[300]!,
           highlightColor: Colors.grey[400]!,
-          period: Duration(seconds: 5),
+          period: const Duration(seconds: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                  margin: EdgeInsets.only(right: 20),
+                  margin: const EdgeInsets.only(right: 20),
                   width: 120,
                   height: 150,
                   decoration: BoxDecoration(
@@ -116,13 +115,13 @@ class _loadingWidgetState extends State<loadingWidget> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(25.0),
                   )),
-              Expanded(
+              const Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
+                        padding: EdgeInsets.only(bottom: 20),
                         child: Skeleton(
                           width: 250,
                           height: 15,
@@ -150,7 +149,7 @@ class _loadingWidgetState extends State<loadingWidget> {
                       height: 15,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 15.0),
+                      padding: EdgeInsets.only(top: 15.0),
                       child: Skeleton(
                         width: 250,
                         height: 15,

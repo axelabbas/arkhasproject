@@ -31,13 +31,12 @@ searchTamata(query, pageNo) async {
       .map((e) => e.innerHtml.trim())
       .toList();
   if (items != null)
+    // ignore: curly_braces_in_flow_control_structures
     for (final ele in items) {
       dom.Document eleHtml = dom.Document.html(ele);
       var strPrice = eleHtml.querySelector("span.price")?.text;
 
-      if (strPrice == null) {
-        strPrice = "price not found";
-      }
+      strPrice ??= "price not found";
 
       double price = stringToPrice(strPrice);
 

@@ -40,10 +40,10 @@ class _homeScreenState extends State<homeScreen> {
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                         color: Colors.grey.withOpacity(.2), width: 0.0),
-                    borderRadius: BorderRadius.all(Radius.circular(0.0)),
+                    borderRadius: const BorderRadius.all(Radius.circular(0.0)),
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(00.0)),
+                    borderRadius: const BorderRadius.all(Radius.circular(00.0)),
                     borderSide: BorderSide(
                         color: Colors.grey.withOpacity(.2), width: 0.0),
                   ),

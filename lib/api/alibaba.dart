@@ -3,10 +3,8 @@ import 'dart:convert';
 import 'package:arkhasproject/api/itemClass.dart';
 import 'package:arkhasproject/util/usefulfunctions.dart';
 import 'package:http/http.dart' as http;
-import 'package:html/dom.dart' as dom;
-import 'package:beautiful_soup_dart/beautiful_soup.dart';
-
-
+// import 'package:beautiful_soup_dart/beautiful_soup.dart';
+// import "dart:developer";
 
 searchAlibaba(query, pageNo) async {
   var headers = {
@@ -28,16 +26,18 @@ searchAlibaba(query, pageNo) async {
   String url =
       "https://en.alibaba.com/trade/search?spm=a2700.galleryofferlist.0.0.561f50bbOksSmA&fsb=y&IndexArea=product_en&keywords=$query&tab=all&viewtype=L&&page=${pageNo + 1}";
   final respone = await http.get(Uri.parse(url), headers: headers);
-  BeautifulSoup bs = BeautifulSoup(respone.body);
-  var script = bs.findAll("script")[32].text.trim();
-  var js = json.decode(script
+
+  // BeautifulSoup bs = BeautifulSoup(respone.body);
+  // var script = bs.findAll("script")[32].text.trim();
+  var js = json.decode(respone.body
+      .toString()
       .split("window.__page__data__config = ")[1]
       .split("window.__page__data = window.__page__data__config.props")[0]);
   var listOfProducts = js["props"]["offerResultData"]["offers"];
+
   if (listOfProducts != null)
     for (final ele in listOfProducts) {
-      var title =
-          ele["title"].replaceAll("<strong>", "").replaceAll("</strong>", "");
+      var title = ele["title"].replaceAll("<b>", "").replaceAll("</b>", "");
       var itemLink = ele["productUrl"].replaceAll("//www.", "www.");
       var type = "AliBaba";
       var img = "https:" + ele["mainImage"];
@@ -52,8 +52,8 @@ searchAlibaba(query, pageNo) async {
       double price = stringToPrice(strPrice);
 
       itemLink = "https://$itemLink";
-      itemsList.add(
-          item(title, type, img, rateBase, strPrice, itemLink, price));
+      itemsList
+          .add(item(title, type, img, rateBase, strPrice, itemLink, price));
     }
   return itemsList;
 }
