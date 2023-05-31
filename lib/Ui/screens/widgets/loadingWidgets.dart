@@ -93,7 +93,7 @@ class _loadingWidgetState extends State<loadingWidget> {
       borderRadius: BorderRadius.circular(20),
       onTap: () {},
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
             color: Colors.grey.withOpacity(.4),
             borderRadius: BorderRadius.circular(20)),
