@@ -250,8 +250,8 @@ class compareScreenState extends State<compareScreen> {
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(.2),
-                blurRadius: 3,
-                offset: const Offset(0, 5),
+                blurRadius: 10,
+                offset: const Offset(0, 1),
               ),
             ],
             color: Colors.grey.shade100,
