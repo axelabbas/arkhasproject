@@ -7,7 +7,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     setWindowTitle("Arkhasly");
-    setWindowMaxSize(const Size(720, 1100));
+    setWindowMaxSize(const Size(720, 1280));
   }
 
   runApp(MaterialApp(

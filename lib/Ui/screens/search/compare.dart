@@ -1,12 +1,17 @@
+// ignore_for_file: unused_catch_clause
+
+import 'dart:async';
+
 import 'package:arkhasproject/Ui/screens/widgets/loadingWidgets.dart';
 import 'package:arkhasproject/api/alibaba.dart';
 import 'package:arkhasproject/api/aliexpress.dart';
+import 'package:arkhasproject/api/itemClass.dart';
+import 'package:arkhasproject/api/miswag.dart';
 import 'package:flutter/material.dart';
 import 'package:arkhasproject/api/ebay.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:arkhasproject/api/tamata.dart';
-
 import '../widgets/starsWidget.dart';
 
 class compareScreen extends StatefulWidget {
@@ -35,7 +40,7 @@ class compareScreenState extends State<compareScreen> {
   List currentItems = [];
   String selected = "All";
 
-  List platforms = ["All", "AliBaba", "Tamata", "AliExpress", "Ebay"];
+  List platforms = ["All", "AliBaba", "Tamata", "AliExpress", "Ebay", "Miswag"];
   void scrollUp() {
     _controller.animateTo(
       _controller.position.minScrollExtent,
@@ -163,7 +168,8 @@ class compareScreenState extends State<compareScreen> {
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 10),
-                                    child: searchItem(currentItems[index]),
+                                    child:
+                                        searchItem(currentItems[index], index),
                                   );
                                 },
                               ),
@@ -215,25 +221,57 @@ class compareScreenState extends State<compareScreen> {
 
   getAllResults(query) async {
     List<dynamic> allItems = [];
+    var tamataItems = [];
+    var aliexpressItems = [];
+    var ebayItems = [];
+    var alibabaItems = [];
+    var miswagItems = [];
     // var amazonItems = await searchAmazon(query, 1);
-    var aliexpressItems = await searchAliExpress(query, 1);
-    var tamataItems = await searchTamata(query, 1);
-    var alibabaItems = await searchAlibaba(query, 1);
-    var ebayItems = await searchEbay(query, 1);
+    try {
+      aliexpressItems = await searchAliExpress(query, 1);
+    } on TimeoutException catch (e) {
+      print("timeoutException aliex");
+    }
+    try {
+      miswagItems = await searchMiswag(query, 1);
+    } on TimeoutException catch (e) {
+      print("timeoutException aliex");
+    }
+    try {
+      tamataItems = await searchTamata(query, 1);
+    } on TimeoutException catch (e) {
+      print("timeoutException tamata");
+    }
+    try {
+      alibabaItems = await searchAlibaba(query, 1);
+    } on TimeoutException catch (e) {
+      // ignore: avoid_print
+      print("timeoutException alibaba");
+    }
+
+    try {
+      ebayItems = await searchEbay(query, 1);
+    } on TimeoutException catch (e) {
+      print("timeoutException ebay");
+    }
+
     allItems = [
       ...alibabaItems,
       ...aliexpressItems,
       ...ebayItems,
-      ...tamataItems
+      ...tamataItems,
+      ...miswagItems,
     ];
     // allItems = ebayItems;
     allItems.shuffle();
     itemsList = allItems;
     currentItems = allItems;
+    print(allItems.length);
+
     return "done";
   }
 
-  searchItem(item) {
+  searchItem(item item, int index) {
     Uri link = Uri.parse(item.link);
     return InkWell(
       borderRadius: BorderRadius.circular(20),
@@ -254,7 +292,7 @@ class compareScreenState extends State<compareScreen> {
                 offset: const Offset(0, 1),
               ),
             ],
-            color: Colors.grey.shade100,
+            color: Colors.grey.shade300,
             borderRadius: BorderRadius.circular(20)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -271,6 +309,15 @@ class compareScreenState extends State<compareScreen> {
                     borderRadius: BorderRadius.circular(25.0),
                     child: Image.network(
                       item.img,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(child: CircularProgressIndicator());
+                      },
+                      errorBuilder: (BuildContext context, Object exception,
+                          StackTrace? stackTrace) {
+                        return Image.asset("assets/images/errorImg.jpg");
+                      },
                     ))),
             Expanded(
               child: Column(
@@ -466,9 +513,13 @@ class compareScreenState extends State<compareScreen> {
           decoration: BoxDecoration(
               color: selected == itemName ? Colors.blue : Colors.white,
               borderRadius: const BorderRadius.all(Radius.circular(25)),
-              border: Border.all(color: Colors.black)),
+              border: Border.all(color: Colors.grey)),
           child: Center(
-            child: Text(itemName),
+            child: Text(
+              itemName,
+              style: TextStyle(
+                  color: selected == itemName ? Colors.white : Colors.black),
+            ),
           ),
         ),
       ),

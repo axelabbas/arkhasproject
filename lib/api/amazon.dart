@@ -37,57 +37,62 @@ searchAmazon(query, pageNo) async {
   };
   List<item> itemsList = [];
   String url = "https://www.amazon.com/s?k=$query&page=$pageNo";
-  final respone = await http.get(Uri.parse(url), headers: headers);
-  dom.Document html = dom.Document.html(respone.body);
-  String selector = "div.s-main-slot.s-result-list.s-search-results.sg-row";
-  List? items = html
-      .querySelector(selector)
-      ?.children
-      .map((e) => e.innerHtml.trim())
-      .toList();
-  if (items != null)
-    // ignore: curly_braces_in_flow_control_structures
-    for (final ele in items) {
-      dom.Document eleHtml = dom.Document.html(ele);
-      var strPrice = eleHtml
-          .querySelector("span.a-price > span.a-offscreen")
-          ?.innerHtml
-          .trim();
-      var title = eleHtml
-          .querySelector("div.a-section > h2 > a > span")
-          ?.innerHtml
-          .trim();
-      var rateBase = double.tryParse(eleHtml
-              .querySelector("i > .a-icon-alt")
-              ?.innerHtml
-              .trim()
-              .split(" ")[0] ??
-          "");
-      // var ratesCount = int.tryParse(eleHtml
-      //         .querySelector("div > span > a > span")
-      //         ?.innerHtml
-      //         .trim()
-      //         .replaceAll("(", "")
-      //         .replaceAll(")", "") ??
-      //     "");
+  try {
+    final respone = await http.get(Uri.parse(url), headers: headers);
+    dom.Document html = dom.Document.html(respone.body);
+    String selector = "div.s-main-slot.s-result-list.s-search-results.sg-row";
+    List? items = html
+        .querySelector(selector)
+        ?.children
+        .map((e) => e.innerHtml.trim())
+        .toList();
+    if (items != null)
+      // ignore: curly_braces_in_flow_control_structures
+      for (final ele in items) {
+        dom.Document eleHtml = dom.Document.html(ele);
+        var strPrice = eleHtml
+            .querySelector("span.a-price > span.a-offscreen")
+            ?.innerHtml
+            .trim();
+        var title = eleHtml
+            .querySelector("div.a-section > h2 > a > span")
+            ?.innerHtml
+            .trim();
+        var rateBase = double.tryParse(eleHtml
+                .querySelector("i > .a-icon-alt")
+                ?.innerHtml
+                .trim()
+                .split(" ")[0] ??
+            "");
+        // var ratesCount = int.tryParse(eleHtml
+        //         .querySelector("div > span > a > span")
+        //         ?.innerHtml
+        //         .trim()
+        //         .replaceAll("(", "")
+        //         .replaceAll(")", "") ??
+        //     "");
 
-      var img = eleHtml
-          .querySelector(".a-section > .s-image")
-          ?.attributes["src"]!
-          .trim();
+        var img = eleHtml
+            .querySelector(".a-section > .s-image")
+            ?.attributes["src"]!
+            .trim();
 
-      if (title == null) {
-        continue;
+        if (title == null) {
+          continue;
+        }
+        rateBase ??= 0;
+
+        // ratesCount ??= 0;
+
+        strPrice ??= "Price not found";
+        img ??= "NOT FOUND";
+        double price = stringToPrice(strPrice);
+        itemsList.add(
+            item(title, "Amazon", img, rateBase, strPrice, "testlink", price));
       }
-      rateBase ??= 0;
-
-      // ratesCount ??= 0;
-
-      strPrice ??= "Price not found";
-      img ??= "NOT FOUND";
-      double price = stringToPrice(strPrice);
-      itemsList.add(
-          item(title, "Amazon", img, rateBase, strPrice, "testlink", price));
-    }
+  } catch (e) {
+    print(e);
+    throw (e);
+  }
   return itemsList;
 }

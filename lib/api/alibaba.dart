@@ -25,35 +25,44 @@ searchAlibaba(query, pageNo) async {
   List<item> itemsList = [];
   String url =
       "https://en.alibaba.com/trade/search?spm=a2700.galleryofferlist.0.0.561f50bbOksSmA&fsb=y&IndexArea=product_en&keywords=$query&tab=all&viewtype=L&&page=${pageNo + 1}";
-  final respone = await http.get(Uri.parse(url), headers: headers);
+  try {
+    final respone = await http.get(Uri.parse(url), headers: headers);
+    var js = json.decode(respone.body
+        .toString()
+        .split("window.__page__data__config = ")[1]
+        .split("window.__page__data = window.__page__data__config.props")[0]);
+    var listOfProducts = js["props"]["offerResultData"]["offerList"];
+    if (listOfProducts != null) {
+      for (final ele in listOfProducts) {
+        var title = ele['information']["title"]
+            .replaceAll("<b>", "")
+            .replaceAll("</b>", "")
+            .replaceAll("<strong>", "")
+            .replaceAll("</strong>", "");
+        var itemLink =
+            ele['information']["productUrl"].replaceAll("//www.", "www.");
+        var type = "AliBaba";
+        var img = "https:" + ele["image"]["mainImage"];
+        double rateBase = 0;
+
+        if (ele["reviews"]["supplierService"] == null) {
+          rateBase = 0;
+        } else {
+          rateBase = double.tryParse(ele["reviews"]["supplierService"])!;
+        }
+        var strPrice = ele["tradePrice"]["price"];
+        double price = stringToPrice(strPrice);
+
+        itemLink = "https://$itemLink";
+        itemsList
+            .add(item(title, type, img, rateBase, strPrice, itemLink, price));
+      }
+    }
+  } catch (e) {
+    print(e);
+  }
 
   // BeautifulSoup bs = BeautifulSoup(respone.body);
   // var script = bs.findAll("script")[32].text.trim();
-  var js = json.decode(respone.body
-      .toString()
-      .split("window.__page__data__config = ")[1]
-      .split("window.__page__data = window.__page__data__config.props")[0]);
-  var listOfProducts = js["props"]["offerResultData"]["offers"];
-
-  if (listOfProducts != null)
-    for (final ele in listOfProducts) {
-      var title = ele["title"].replaceAll("<b>", "").replaceAll("</b>", "");
-      var itemLink = ele["productUrl"].replaceAll("//www.", "www.");
-      var type = "AliBaba";
-      var img = "https:" + ele["mainImage"];
-      double rateBase = 0;
-
-      if (ele["supplierService"] == null) {
-        rateBase = 0;
-      } else {
-        rateBase = double.tryParse(ele["supplierService"])!;
-      }
-      var strPrice = ele["price"];
-      double price = stringToPrice(strPrice);
-
-      itemLink = "https://$itemLink";
-      itemsList
-          .add(item(title, type, img, rateBase, strPrice, itemLink, price));
-    }
   return itemsList;
 }

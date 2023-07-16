@@ -41,43 +41,49 @@ searchAliExpress(query, pageNo) async {
     "dependency": []
   });
   String url = 'https://www.aliexpress.com/fn/search-pc/index';
-  final respone = await http.post(Uri.parse(url), headers: headers, body: body);
-  var apiResp = json.decode(respone.body);
-  var items = apiResp["data"]["result"]["mods"]["itemList"]["content"];
-  if (items != null)
-    for (Map ele in items) {
-      var productId = ele['productId'];
-      var itemLink = "https://www.aliexpress.com/item/$productId.html";
-      var strPrice = ele["prices"]['salePrice']['formattedPrice'];
-      var title = ele["title"]['displayTitle'];
-      double rateBase = 0;
+  try {
+    final respone =
+        await http.post(Uri.parse(url), headers: headers, body: body);
+    var apiResp = json.decode(respone.body);
+    var items = apiResp["data"]["result"]["mods"]["itemList"]["content"];
+    if (items != null)
+      for (Map ele in items) {
+        var productId = ele['productId'];
+        var itemLink = "https://www.aliexpress.com/item/$productId.html";
+        var strPrice = ele["prices"]['salePrice']['formattedPrice'];
+        var title = ele["title"]['displayTitle'];
+        double rateBase = 0;
 
-      if (ele.containsKey("evaluation")) {
-        rateBase = ele["evaluation"]["starRating"].toDouble();
+        if (ele.containsKey("evaluation")) {
+          rateBase = ele["evaluation"]["starRating"].toDouble();
+        }
+
+        // var ratesCount = int.tryParse(eleHtml
+        //         .querySelector("div > span > a > span")
+        //         ?.innerHtml
+        //         .trim()
+        //         .replaceAll("(", "")
+        //         .replaceAll(")", "") ??
+        //     "");
+
+        var img = "https:" + ele['image']['imgUrl'];
+
+        if (title == null) {
+          continue;
+        }
+        // ratesCount ??= 0;
+
+        if (strPrice == null) {
+          continue;
+        }
+        double price = stringToPrice(strPrice);
+
+        itemsList.add(item(
+            title, "AliExpress", img, rateBase, strPrice, itemLink, price));
       }
-
-      // var ratesCount = int.tryParse(eleHtml
-      //         .querySelector("div > span > a > span")
-      //         ?.innerHtml
-      //         .trim()
-      //         .replaceAll("(", "")
-      //         .replaceAll(")", "") ??
-      //     "");
-
-      var img = "https:" + ele['image']['imgUrl'];
-
-      if (title == null) {
-        continue;
-      }
-      // ratesCount ??= 0;
-
-      if (strPrice == null) {
-        continue;
-      }
-      double price = stringToPrice(strPrice);
-
-      itemsList.add(
-          item(title, "AliExpress", img, rateBase, strPrice, itemLink, price));
-    }
+  } catch (e) {
+    print(e);
+    throw (e);
+  }
   return itemsList;
 }

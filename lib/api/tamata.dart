@@ -22,62 +22,67 @@ searchTamata(query, pageNo) async {
   List<item> itemsList = [];
   String url =
       "https://www.tamata.com/catalogsearch/result/index/?q=$query&p=$pageNo&shopbyAjax=1";
-  final respone = await http.get(Uri.parse(url), headers: headers);
-  dom.Document html = dom.Document.html(respone.body);
-  String selector = "div.products.wrapper.grid.products-grid > ol";
-  List? items = html
-      .querySelector(selector)
-      ?.children
-      .map((e) => e.innerHtml.trim())
-      .toList();
-  if (items != null)
-    // ignore: curly_braces_in_flow_control_structures
-    for (final ele in items) {
-      dom.Document eleHtml = dom.Document.html(ele);
-      var strPrice = eleHtml.querySelector("span.price")?.text;
+  try {
+    final respone = await http.get(Uri.parse(url), headers: headers);
+    dom.Document html = dom.Document.html(respone.body);
+    String selector = "div.products.wrapper.grid.products-grid > ol";
+    List? items = html
+        .querySelector(selector)
+        ?.children
+        .map((e) => e.innerHtml.trim())
+        .toList();
+    if (items != null)
+      // ignore: curly_braces_in_flow_control_structures
+      for (final ele in items) {
+        dom.Document eleHtml = dom.Document.html(ele);
+        var strPrice = eleHtml.querySelector("span.price")?.text;
 
-      strPrice ??= "price not found";
+        strPrice ??= "price not found";
 
-      double price = stringToPrice(strPrice);
+        double price = stringToPrice(strPrice);
 
-      var itemLink = eleHtml
-          .querySelector(
-              "div.product.details.product-item-details > strong > a")
-          ?.attributes['href'];
+        var itemLink = eleHtml
+            .querySelector(
+                "div.product.details.product-item-details > strong > a")
+            ?.attributes['href'];
 
-      var title = eleHtml
-          .querySelector(
-              "div.product.details.product-item-details > strong > a")
-          ?.text;
-      // var rateBase = double.tryParse(
-      //     eleHtml.querySelector(".x-star-rating > span")?.text.split(" ")[0] ??
-      //         "");
-      var rateBase = 0.0;
-      // var ratesCount = int.tryParse(eleHtml
-      //         .querySelector("div > span > a > span")
-      //         ?.innerHtml
-      //         .trim()
-      //         .replaceAll("(", "")
-      //         .replaceAll(")", "") ??
-      //     "");
+        var title = eleHtml
+            .querySelector(
+                "div.product.details.product-item-details > strong > a")
+            ?.text;
+        // var rateBase = double.tryParse(
+        //     eleHtml.querySelector(".x-star-rating > span")?.text.split(" ")[0] ??
+        //         "");
+        var rateBase = 0.0;
+        // var ratesCount = int.tryParse(eleHtml
+        //         .querySelector("div > span > a > span")
+        //         ?.innerHtml
+        //         .trim()
+        //         .replaceAll("(", "")
+        //         .replaceAll(")", "") ??
+        //     "");
 
-      var img = eleHtml
-          .querySelector("div.prod-list-imgbox > a > span > span > img")
-          ?.attributes["src"]!
-          .trim();
+        var img = eleHtml
+            .querySelector("div.prod-list-imgbox > a > span > span > img")
+            ?.attributes["src"]!
+            .trim();
 
-      if (title == null) {
-        continue;
+        if (title == null) {
+          continue;
+        }
+        if (itemLink == null) {
+          continue;
+        }
+        // rateBase ??= 0;
+
+        // ratesCount ??= 0;
+        img ??= "NOT FOUND";
+        itemsList.add(
+            item(title, "Tamata", img, rateBase, strPrice, itemLink, price));
       }
-      if (itemLink == null) {
-        continue;
-      }
-      // rateBase ??= 0;
-
-      // ratesCount ??= 0;
-      img ??= "NOT FOUND";
-      itemsList
-          .add(item(title, "Tamata", img, rateBase, strPrice, itemLink, price));
-    }
+  } catch (e) {
+    print(e);
+    throw (e);
+  }
   return itemsList;
 }

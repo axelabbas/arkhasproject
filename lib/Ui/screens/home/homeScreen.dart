@@ -1,4 +1,5 @@
 import 'package:arkhasproject/Ui/screens/search/compare.dart';
+import 'package:arkhasproject/api/miswag.dart';
 import 'package:flutter/material.dart';
 
 class homeScreen extends StatefulWidget {
@@ -9,6 +10,11 @@ class homeScreen extends StatefulWidget {
 }
 
 class _homeScreenState extends State<homeScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     String search = '';
