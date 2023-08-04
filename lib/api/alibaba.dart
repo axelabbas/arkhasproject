@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:arkhasproject/api/itemClass.dart';
 import 'package:arkhasproject/util/usefulfunctions.dart';
 import 'package:http/http.dart' as http;
-// import 'package:beautiful_soup_dart/beautiful_soup.dart';
-// import "dart:developer";
 
 searchAlibaba(query, pageNo) async {
   var headers = {
@@ -25,7 +23,6 @@ searchAlibaba(query, pageNo) async {
   List<item> itemsList = [];
   String url =
       "https://en.alibaba.com/trade/search?spm=a2700.galleryofferlist.0.0.561f50bbOksSmA&fsb=y&IndexArea=product_en&keywords=$query&tab=all&viewtype=L&&page=${pageNo + 1}";
-  try {
     final respone = await http.get(Uri.parse(url), headers: headers);
     var js = json.decode(respone.body
         .toString()
@@ -57,12 +54,7 @@ searchAlibaba(query, pageNo) async {
         itemsList
             .add(item(title, type, img, rateBase, strPrice, itemLink, price));
       }
-    }
-  } catch (e) {
-    print(e);
   }
 
-  // BeautifulSoup bs = BeautifulSoup(respone.body);
-  // var script = bs.findAll("script")[32].text.trim();
   return itemsList;
 }

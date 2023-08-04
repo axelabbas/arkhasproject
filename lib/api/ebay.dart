@@ -28,13 +28,11 @@ searchEbay(query, pageNo) async {
         ?.children
         .map((e) => e.innerHtml.trim())
         .toList();
-    if (items != null)
-      // ignore: curly_braces_in_flow_control_structures
+    if (items != null) {
       for (final ele in items) {
         dom.Document eleHtml = dom.Document.html(ele);
         var strPrice = eleHtml.querySelector(".s-item__price")?.text;
 
-        strPrice ??= "price not found";
         double price = stringToPrice(strPrice);
 
         var itemLink =
@@ -46,13 +44,6 @@ searchEbay(query, pageNo) async {
                 ?.text
                 .split(" ")[0] ??
             "");
-        // var ratesCount = int.tryParse(eleHtml
-        //         .querySelector("div > span > a > span")
-        //         ?.innerHtml
-        //         .trim()
-        //         .replaceAll("(", "")
-        //         .replaceAll(")", "") ??
-        //     "");
 
         var img = eleHtml
             .querySelector(".s-item__image-wrapper > img")
@@ -66,13 +57,10 @@ searchEbay(query, pageNo) async {
           continue;
         }
         rateBase ??= 0;
-
-        // ratesCount ??= 0;
-
-        img ??= "NOT FOUND";
         itemsList
             .add(item(title, "Ebay", img, rateBase, strPrice, itemLink, price));
       }
+    }
   } catch (e) {
     print(e);
     throw (e);

@@ -31,13 +31,10 @@ searchTamata(query, pageNo) async {
         ?.children
         .map((e) => e.innerHtml.trim())
         .toList();
-    if (items != null)
-      // ignore: curly_braces_in_flow_control_structures
+    if (items != null) {
       for (final ele in items) {
         dom.Document eleHtml = dom.Document.html(ele);
         var strPrice = eleHtml.querySelector("span.price")?.text;
-
-        strPrice ??= "price not found";
 
         double price = stringToPrice(strPrice);
 
@@ -50,17 +47,8 @@ searchTamata(query, pageNo) async {
             .querySelector(
                 "div.product.details.product-item-details > strong > a")
             ?.text;
-        // var rateBase = double.tryParse(
-        //     eleHtml.querySelector(".x-star-rating > span")?.text.split(" ")[0] ??
-        //         "");
+
         var rateBase = 0.0;
-        // var ratesCount = int.tryParse(eleHtml
-        //         .querySelector("div > span > a > span")
-        //         ?.innerHtml
-        //         .trim()
-        //         .replaceAll("(", "")
-        //         .replaceAll(")", "") ??
-        //     "");
 
         var img = eleHtml
             .querySelector("div.prod-list-imgbox > a > span > span > img")
@@ -73,13 +61,11 @@ searchTamata(query, pageNo) async {
         if (itemLink == null) {
           continue;
         }
-        // rateBase ??= 0;
 
-        // ratesCount ??= 0;
-        img ??= "NOT FOUND";
         itemsList.add(
             item(title, "Tamata", img, rateBase, strPrice, itemLink, price));
       }
+    }
   } catch (e) {
     print(e);
     throw (e);

@@ -1,10 +1,12 @@
-double stringToPrice(String price) {
-  if (price == "price not found") {
+double stringToPrice(String? price) {
+  if (price == null) {
+    print("Is null");
     price = "0";
   }
   double intPrice = 0;
   price = price.replaceAll("\$", "");
   price = price.replaceAll("US ", "");
+  price = price.replaceAll("USD ", "");
   price = price.replaceAll(",", "");
   price = price.replaceAll("٬", "");
   price = price.replaceAll("IQD ", "");
@@ -21,7 +23,6 @@ double stringToPrice(String price) {
   } else {
     intPrice = double.parse(price);
   }
-
   return intPrice;
 }
 

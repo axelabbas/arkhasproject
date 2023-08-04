@@ -39,7 +39,7 @@ searchMiswag(query, pageNo) async {
   }''';
   String url =
       "https://mhvrrwwor7-dsn.algolia.net/1/indexes/*/queries?x-algolia-agent=Algolia%20for%20JavaScript%20(4.18.0)%3B%20Browser%20(lite)%3B%20instantsearch.js%20(4.56.5)%3B%20Vue%20(2.7.14)%3B%20Vue%20InstantSearch%20(3.9.0)%3B%20JS%20Helper%20(3.13.3)&x-algolia-api-key=37c123903276a13cb2fdf126c5c61500&x-algolia-application-id=MHVRRWWOR7";
-  // try {
+  try {
   final respone = await http.post(Uri.parse(url), headers: headers, body: body);
 
   var js = json.decode(respone.body);
@@ -71,11 +71,9 @@ searchMiswag(query, pageNo) async {
           title, type, img, rateBase.toDouble(), strPrice, itemLink, price));
     }
   }
-  // } catch (e) {
-  //   print(e);
-  // }
+  } catch (e) {
+    print(e);
+  }
 
-  // BeautifulSoup bs = BeautifulSoup(respone.body);
-  // var script = bs.findAll("script")[32].text.trim();
   return itemsList;
 }

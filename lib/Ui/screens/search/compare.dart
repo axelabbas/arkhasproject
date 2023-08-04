@@ -2,9 +2,10 @@
 
 import 'dart:async';
 
-import 'package:arkhasproject/Ui/screens/widgets/loadingWidgets.dart';
+// import 'package:arkhasproject/Ui/screens/widgets/loadingWidgets.dart';
 import 'package:arkhasproject/api/alibaba.dart';
 import 'package:arkhasproject/api/aliexpress.dart';
+import 'package:arkhasproject/api/amazon.dart';
 import 'package:arkhasproject/api/itemClass.dart';
 import 'package:arkhasproject/api/miswag.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,15 @@ class compareScreen extends StatefulWidget {
 }
 
 class compareScreenState extends State<compareScreen> {
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  //overRiding setstate so that it only works if the screen is still on focus, otherwise it'd cause errors
+  // in the loading widget
   int group = 1;
   bool finishedLoading = false;
   final ScrollController _controller = ScrollController();
@@ -39,8 +49,16 @@ class compareScreenState extends State<compareScreen> {
   List itemsList = [];
   List currentItems = [];
   String selected = "All";
-
-  List platforms = ["All", "AliBaba", "Tamata", "AliExpress", "Ebay", "Miswag"];
+  String currentlyFetching = "";
+  List platforms = [
+    "All",
+    "Amazon",
+    "AliBaba",
+    "Tamata",
+    "AliExpress",
+    "Ebay",
+    "Miswag"
+  ];
   void scrollUp() {
     _controller.animateTo(
       _controller.position.minScrollExtent,
@@ -210,7 +228,17 @@ class compareScreenState extends State<compareScreen> {
                       ],
                     );
                   } else {
-                    return const loadingWidget();
+                    return Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          Text("Getting $currentlyFetching Items")
+                        ],
+                      ),
+                    );
+                    // return const loadingWidget();
                   }
                 }),
           ),
@@ -226,47 +254,46 @@ class compareScreenState extends State<compareScreen> {
     var ebayItems = [];
     var alibabaItems = [];
     var miswagItems = [];
-    // var amazonItems = await searchAmazon(query, 1);
-    try {
-      aliexpressItems = await searchAliExpress(query, 1);
-    } on TimeoutException catch (e) {
-      print("timeoutException aliex");
-    }
-    try {
-      miswagItems = await searchMiswag(query, 1);
-    } on TimeoutException catch (e) {
-      print("timeoutException aliex");
-    }
-    try {
-      tamataItems = await searchTamata(query, 1);
-    } on TimeoutException catch (e) {
-      print("timeoutException tamata");
-    }
-    try {
-      alibabaItems = await searchAlibaba(query, 1);
-    } on TimeoutException catch (e) {
-      // ignore: avoid_print
-      print("timeoutException alibaba");
-    }
+    setState(() {
+      currentlyFetching = "Amazon";
+    });
+    var amazonItems = await searchAmazon(query, 1);
 
-    try {
-      ebayItems = await searchEbay(query, 1);
-    } on TimeoutException catch (e) {
-      print("timeoutException ebay");
-    }
+    setState(() {
+      currentlyFetching = "AliExpress";
+    });
+    aliexpressItems = await searchAliExpress(query, 1);
+
+    setState(() {
+      currentlyFetching = "Miswag";
+    });
+    miswagItems = await searchMiswag(query, 1);
+
+    setState(() {
+      currentlyFetching = "Tamata";
+    });
+    tamataItems = await searchTamata(query, 1);
+
+    setState(() {
+      currentlyFetching = "AliBaba";
+    });
+    alibabaItems = await searchAlibaba(query, 1);
+    setState(() {
+      currentlyFetching = "Ebay";
+    });
+    ebayItems = await searchEbay(query, 1);
 
     allItems = [
+      ...amazonItems,
       ...alibabaItems,
       ...aliexpressItems,
       ...ebayItems,
       ...tamataItems,
       ...miswagItems,
     ];
-    // allItems = ebayItems;
     allItems.shuffle();
     itemsList = allItems;
     currentItems = allItems;
-    print(allItems.length);
 
     return "done";
   }
@@ -308,7 +335,7 @@ class compareScreenState extends State<compareScreen> {
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(25.0),
                     child: Image.network(
-                      item.img,
+                      item.img!,
                       loadingBuilder: (BuildContext context, Widget child,
                           ImageChunkEvent? loadingProgress) {
                         if (loadingProgress == null) return child;
@@ -359,7 +386,7 @@ class compareScreenState extends State<compareScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: Text(
-                      "${item.strPrice}",
+                      "${item.strPrice ?? 'Price Unlisted'}",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
