@@ -35,7 +35,9 @@ class compareScreenState extends State<compareScreen> {
 
   //overRiding setstate so that it only works if the screen is still on focus, otherwise it'd cause errors
   // in the loading widget
-  int group = 1;
+  int group = 0;
+  // 0 for descanding tanazoly
+  // 1 for ascending tasa3ody
   bool finishedLoading = false;
   final ScrollController _controller = ScrollController();
   late final Future myFuture;
@@ -294,10 +296,10 @@ class compareScreenState extends State<compareScreen> {
       ...tamataItems,
       ...miswagItems,
     ];
-    allItems.shuffle();
+
     itemsList = allItems;
     currentItems = allItems;
-
+    sortByRate(currentItems, isDescending: 1);
     return "done";
   }
 
@@ -493,10 +495,11 @@ class compareScreenState extends State<compareScreen> {
   Future<void> updated(StateSetter updateState, value) async {
     updateState(() {
       group = value;
+      print(group);
     });
   }
 
-  sortByRate(List currentItems) {
+  sortByRate(List currentItems, {isDescending = true}) {
     if (group == 1) {
       currentItems.sort((a, b) => a.rateBase.compareTo(b.rateBase));
     } else {
