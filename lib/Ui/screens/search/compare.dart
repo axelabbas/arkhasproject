@@ -234,6 +234,9 @@ class compareScreenState extends State<compareScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           CircularProgressIndicator(),
+                          SizedBox(
+                            height: 15,
+                          ),
                           Text("Getting $currentlyFetching Items")
                         ],
                       ),
@@ -358,7 +361,7 @@ class compareScreenState extends State<compareScreen> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.bold,
                         fontSize: 15,
                       ),
                     ),

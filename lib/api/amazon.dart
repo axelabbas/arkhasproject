@@ -1,9 +1,10 @@
 import 'package:arkhasproject/util/usefulfunctions.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
-
+import 'dart:core';
 import 'itemClass.dart';
 
+RegExp exp = RegExp(r"USD&nbsp;\d{0,100}\.\d{0,100}");
 searchAmazon(query, pageNo) async {
   var headers = {
     "accept":
@@ -11,9 +12,10 @@ searchAmazon(query, pageNo) async {
     "accept-encoding": "gzip, deflate, br",
     "accept-language": "en",
     "cache-control": "max-age=0",
-    "cookie":
-        "session-id=135-9033544-0390703; ubid-main=134-5264130-6968240; pay-session-id=afab6b24bcb7c7f5e4433776f63241cb; _mkto_trk=id:846-RQB-314&token:_mch-amazon.com-1664595465865-78671; AMCV_A7493BC75245ACD20A490D4D%40AdobeOrg=-2121179033%7CMCIDTS%7C19267%7CMCMID%7C87987423969983405970631597656196772523%7CMCAAMLH-1665200265%7C6%7CMCAAMB-1665200265%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1664602666s%7CNONE%7CMCAID%7CNONE%7CvVersion%7C5.3.0; aws-target-data=%7B%22support%22%3A%221%22%7D; aws-target-visitor-id=1664982482792-15413.37_0; aws-ubid-main=438-0465278-4487583; aws-userInfo-signed=eyJ0eXAiOiJKV1MiLCJrZXlSZWdpb24iOiJ1cy1lYXN0LTEiLCJhbGciOiJFUzM4NCIsImtpZCI6ImFmY2M3ZGEzLWQyNWMtNGNmMC04ZTdkLWEzOGMyOTlhNTUxNSJ9.eyJzdWIiOiIiLCJzaWduaW5UeXBlIjoiUFVCTElDIiwiaXNzIjoiaHR0cDpcL1wvc2lnbmluLmF3cy5hbWF6b24uY29tXC9zaWduaW4iLCJrZXliYXNlIjoiRUl2SEc0RU9Yc3lTbTlsb1pVYjluT3FCa3RuK1czZHcrRmJ5YW1zcXBhND0iLCJhcm4iOiJhcm46YXdzOmlhbTo6NjEzMDIzMDE3NTg4OnJvb3QiLCJ1c2VybmFtZSI6ImF4ZWxzIn0.NZOD0QYTSk9L6fHP9QWbafVD_ePEx84A1csxQ9IUI-gX1oGmhmx8QS7PnYuUzhXjt_JtATzlNJXLP1RV3lcnzPZbMWFKs-6v1cqSbG-jkxmi1C7Y2KQ5WT0R4iia1n_G; aws-userInfo=%7B%22arn%22%3A%22arn%3Aaws%3Aiam%3A%3A613023017588%3Aroot%22%2C%22alias%22%3A%22%22%2C%22username%22%3A%22axels%22%2C%22keybase%22%3A%22EIvHG4EOXsySm9loZUb9nOqBktn%2BW3dw%2BFbyamsqpa4%5Cu003d%22%2C%22issuer%22%3A%22http%3A%2F%2Fsignin.aws.amazon.com%2Fsignin%22%2C%22signinType%22%3A%22PUBLIC%22%7D; regStatus=pre-register; i18n-prefs=USD; sp-cdn=\"L5Z9:IQ\"; lc-main=en_US; av-timezone=Asia/Baghdad; session-id-eu=259-7192985-9489717; ubid-acbuk=261-4086222-7469429; ubid-acbus=134-5264130-6968240; x-main=\"XyFa5nsYd5l@8RSL42Vmbmrnh5ououjqRAhi6XYfoJDSeoU@hT5RjNsU2@fJ5?y3\"; at-main=Atza|IwEBIIUjppp_fQUDn1uBtGpYXyZL9oN6h5q0jtbyWdbEEI81-ztIUV5VleiojXeBcoV8oaM_lt6H-TuqKhycym48o_yq0qbDkJ6ali-gTznxL_CIL6kN6nYS8l4sNvmpM0CmpN43FPCPYPmwhhDNtiXsR1j-vxuyTBXFXWr4yoQ5QuBctfUncd1amhrWbPKr47lACZtPAnmkl9K1VIWrw1u1yFk5; sess-at-main=\"TBTj+tPZ9TMevsf+CEkHbEOMEzq3hx0o40xNdLfh4BY=\"; sst-main=Sst1|PQHOhh8ZkCkZBIgN2b5FxC6XCXtgzdaT5RWEK8HDn1HyiAQ-n9DnGlyEUWSiPaFxWOnMOor9xI_bgRbyqhoZ_w8jwCL6xyAiwLpdUjqidTwj9siLGJHH2vvDH_SlQ0nHSHSgCtZGopPpf-uY2lp8gHv5OaBRpPEymygpy9m5yAdyMU3av4G4n4rPsF4gzoPMm7zxgCqDTNh8jbBWsp5OaFOWcdkMf2KiYT_23W1lF5N-FC8txR9PNVx4_Z4syflqEdg7DcS0cUeD1QAETU8gesd2GEs3hUsaQsYphS5oTA_NCsE; s_fid=1DFC961AA6BBF23C-20CC5D65A92257F4; s_cc=true; _rails-root_session=Q1V1RDlrSEtCeDhqVzM2Vlp6SmppclVHSHBnQ2lXbmlFN2pDRjNTT0xsb09xem1qanJGV3p2M2hKdUVCbHBRUUp0ZGpGTVk0MnV2anlWZTRyOVcvRGZsclc0cjlzR21sc1BzdDZjaWN0MUdCRWtDQm42Wm9KTGJ6Vi9mZWtqNC9oL20rdkhvYmlmMjBERTdOdEZNSXBYNE9tSFVMRlVVbDgxanV2VjZhYWY2S1hud0F0WW55ZWxPRWcvcG5qNXNsLS0wTWNLL2cwOHFnRjQzdWdkaW9kamV3PT0%3D--aa52452955d814c99d40d6a5873aeb68013dc0ed; session-id-time=2082787201l; aws_lang=en; AMCVS_7742037254C95E840A4C98A6%40AdobeOrg=1; AMCV_7742037254C95E840A4C98A6%40AdobeOrg=1585540135%7CMCIDTS%7C19435%7CMCMID%7C87472201635488554340845785351051280852%7CMCAAMLH-1679741010%7C6%7CMCAAMB-1679741010%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1679143410s%7CNONE%7CMCAID%7CNONE%7CvVersion%7C4.4.0; aws-mkto-trk=id%3A112-TZM-766%26token%3A_mch-amazon.com-1664595465865-78671; s_sq=%5B%5BB%5D%5D; csm-hit=tb:YAGFTGDGK9SPHXBHAT58+s-Z6H6C3JG06JB77S2A9M4|1679138282796&t:1679138282796&adb:adblk_yes; session-token=kb7WSwAysnPB1jpgmZCYGJ6GB55xM1Px18WerpVQjvin6bF7Xm3raCZxuGcAZ6ag3VIiSo8rlIbP22tBuBjbAH6Fqr6HTG8+Rn41rVu9sgPHcmfGJKjobcWpIJSqORM/yn/L+UR2jpvDwNXCkRolgV2nqFLSJsg+jGJ2+yinmeAwiuVuWvN7NKOotRRYnmg7nkMp3ikZ8LcPQ2ASNcNPqHNe0aPl3y1rNN0Q0uVA7ktBBnCeUDh7wF6P2GWaoyql",
+    'Cookie':
+        'csm-sid=517-1787060-5260737; x-amz-captcha-1=1691282274046246; x-amz-captcha-2=INYRluJjLLvDgWB444O8cQ==; session-id=258-9750928-6716466; session-id-time=2082787201l; ubid-acbuk=257-6253439-7622819; session-token="bSDAoffYN9cbmhkg+q0LCSHx8leUtTsIRfX6WTLPuNoQ659i68iRBYU+R22cNDtBC+GM5nagHWY23FJu1Oc6teDyeorGHPAa+7icMbf59VEQnhYoRvuZ9al/iUHnrK2VWRXC+DoGbkBuNsO/yES1kxOAO9nDSvmYDY4qWKyvqL7xcqQGXzMdacNKw+AWVeN/tktB9N8inegJ5JUnH4g+sE2CYKyXkrkXTKiQAUiXsFE="; i18n-prefs=USD; csm-hit=tb:GS67EWXDC4E5503MTBCD+s-C89J1HN1YCGJ8YEDA0P3|1691322739988&t:1691322739989&adb:adblk_yes',
     "device-memory": "8",
+    //sp-cdn is for delivery place
     "downlink": "9",
     "dpr": "1.25",
     "ect": "4g",
@@ -40,42 +42,60 @@ searchAmazon(query, pageNo) async {
       "https://www.amazon.co.uk/s?k=$query&page=${pageNo}&currency=USD";
   final respone = await http.get(Uri.parse(url), headers: headers);
   dom.Document html = dom.Document.html(respone.body);
-  String selector = "div.s-main-slot.s-result-list.s-search-results.sg-row";
+  String selector = ".s-main-slot";
   List? items = html
       .querySelector(selector)
       ?.children
       .map((e) => e.innerHtml.trim())
       .toList();
-  print(items);
+// <div class="sg-col-inner"><div cel_widget_id="MAIN-SEARCH_RESULTS-1" class="s-widget-container s-spacing-small s-widget-container-height-small celwidget slot=MAIN template=SEARCH_RESULTS widgetId=search-results_1" data-csa-c-pos="1" data-csa-c-item-id="amzn1.asin.1.B09QQQWM3T" data-csa-op-log-render="" data-csa-c-type="item"><div class="s-card-container s-overflow-hidden aok-relative puis-wide-grid-style puis-wide-grid-style-t3 puis-include-content-margin puis s-latency-cf-section s-card-border"><div class="a-section"><div class="sg-row"><div class="sg-col sg-col-4-of-12 sg-col-4-of-16 sg-col-4-of-20 sg-col-4-of-24 s-list-col-left"><div class="sg-col-inner"><div class="a-section a-spacing-none aok-relative puis-status-badge-container s-list-status-badge-container"></div><div class="s-product-image-container aok-relative s-text-center s-image-overlay-grey puis-image-overlay-grey s-padding-left-small s-padding-right-small s-flex-expand-height"><div class="aok-relative"><span data-component-type="s-product-image" class="rush-component"><a class="a-link-normal s-no-outline" href="/Samsung-A13-White-Old-Version/dp/B09QQQWM3T/ref=sr_1_1?currency=USD&amp;keywords=iphone&amp;qid=1691258579&amp;sr=8-1"><div class="a-section aok-relative s-image-fixed-height"><img class="s-image" src="https://m.media-amazon.com/images/I/718IIORHgAL._AC_UY218_.jpg" srcset="https://m.media-amazon.com/images/I/718IIORHgAL._AC_UY218_.jpg 1x, https://m.media-amazon.com/images/I/718IIORHgAL._AC_UY327_FMwebp_QL65_.jpg 1.5x, https://m.media-amazon.com/images/I/718IIORHgAL._AC_UY436_FMwebp_QL65_.jpg 2x, https://m.media-amazon.com/images/I/718IIORHgAL._AC_UY545_FMwebp_QL65_.jpg 2.5x, https://m.media-amazon.com/images/I/718IIORHgAL._AC_UY654_FMwebp_QL65_.jpg 3x" alt="Samsung Galaxy A13 Mobile Phone SIM Free Android Smartphone 64 GB Awesome White" data-image-index="1" data-image-load="" data-image-latency="s-product-image" data-image-source-density="1"></div></a></span></div></div></div></div><div class="sg-col sg-col-4-of-12 sg-col-8-of-16 sg-col-12-of-20 sg-col-12-of-24 s-list-col-right"><div class="sg-col-inner"><div class="a-section a-spacing-small a-spacing-top-small"><div class="a-section a-spacing-none puis-padding-right-small s-title-instructions-style"><h2 class="a-size-mini a-spacing-none a-color-base s-line-clamp-2"><a class="a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal" href="/Samsung-A13-White-Old-Version/dp/B09QQQWM3T/ref=sr_1_1?currency=USD&amp;keywords=iphone&amp;qid=1691258579&amp;sr=8-1"><span class="a-size-medium a-color-base a-text-normal">Samsung Galaxy A13 Mobile Phone SIM Free Android Smartphone 64 GB Awesome White</span></a> </h2></div><div class="a-section a-spacing-none a-spacing-top-micro"><div class="a-row a-size-small"><span aria-label="4.4 out of 5 stars"><span class="a-declarative" data-action="a-popover" data-csa-c-type="widget" data-csa-c-func-deps="aui-da-a-popover" data-a-popover="{&quot;closeButton&quot;:false,&quot;closeButtonLabel&quot;:&quot;&quot;,&quot;position&quot;:&quot;triggerBottom&quot;,&quot;popoverLabel&quot;:&quot;&quot;,&quot;url&quot;:&quot;/review/widgets/average-customer-review/popover/ref=acr_search__popover?ie=UTF8&amp;asin=B09QQQWM3T&amp;ref=acr_search__popover&amp;contextId=search&quot;}"><a href="javascript:void(0)" role="button" class="a-popover-trigger a-declarative"><i class="a-icon a-icon-star-small a-star-small-4-5 aok-align-bottom"><span class="a-icon-alt">4.4 out of 5 stars</span></i><i class="a-icon a-icon-popover"></i></a></span> </span><span aria-label="741"><a class="a-link-normal s-underline-text s-underline-link-text s-link-style" href="/Samsung-A13-White-Old-Version/dp/B09QQQWM3T/ref=sr_1_1?currency=USD&amp;keywords=iphone&amp;qid=1691258579&amp;sr=8-1#customerReviews"><span class="a-size-base s-underline-text">741</span> </a> </span></div></div><div class="sg-row"><div class="sg-col sg-col-4-of-12 sg-col-4-of-16 sg-col-4-of-20 sg-col-4-of-24"><div class="sg-col-inner"></div></div><div class="sg-col sg-col-4-of-12 sg-col-4-of-16 sg-col-8-of-20 sg-col-8-of-24"><div class="sg-col-inner"></div></div></div></div></div></div></div></div></div></div></div>
   if (items != null) {
-    for (final ele in items) {
+    items.removeAt(0);
+    // print(html.querySelector(selector)!.text);
+    items.asMap().forEach((index, ele) {
       dom.Document eleHtml = dom.Document.html(ele);
       var strPrice = eleHtml
           .querySelector("span.a-price > span.a-offscreen")
           ?.innerHtml
           .trim()
           .replaceAll("&nbsp;", " ");
-      if (strPrice == null) continue;
+      if (strPrice == null) {
+        strPrice = eleHtml
+            .querySelector("a.a-size-base > span.a-price > span.a-offscreen")
+            ?.text
+            .trim()
+            .replaceAll("\u{00A0}", " ");
+        if (strPrice == null) {
+          strPrice = '0.0';
+        }
+      }
       var title = eleHtml
           .querySelector("div.a-section > h2 > a > span")
           ?.innerHtml
           .trim();
-      var rateBase = 0.0;
-
+      var rateBase = stringToPrice(eleHtml
+          .querySelector("i.a-icon-star-small > span")
+          ?.text
+          .split(" out")[0]);
+      var link = eleHtml
+          .querySelector(".a-section > .s-image")
+          ?.parent!
+          .parent!
+          .attributes["href"]!
+          .trim();
+      link = "https://www.amazon.co.uk${link}";
       var img = eleHtml
           .querySelector(".a-section > .s-image")
           ?.attributes["src"]!
           .trim();
 
-      if (title == null) {
-        continue;
+      if (title != null) {
+        double price = stringToPrice(strPrice);
+        itemsList
+            .add(item(title, "Amazon", img, rateBase, strPrice, link, price));
       }
       // rateBase ??= 0;
-
-      double price = stringToPrice(strPrice);
-      itemsList.add(
-          item(title, "Amazon", img, rateBase, strPrice, "testlink", price));
-    }
+    });
   }
 
   return itemsList;

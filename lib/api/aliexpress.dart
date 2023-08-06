@@ -24,6 +24,7 @@ searchAliExpress(query, pageNo) async {
     "sec-fetch-site": "same-origin"
   };
   List<item> itemsList = [];
+
   var body = jsonEncode({
     "pageVersion": "984c9a58b6d16e5d8c31de9b899f058a",
     "target": "root",
@@ -41,30 +42,35 @@ searchAliExpress(query, pageNo) async {
     "dependency": []
   });
   String url = 'https://www.aliexpress.com/fn/search-pc/index';
-    final respone =
-        await http.post(Uri.parse(url), headers: headers, body: body);
-    var apiResp = json.decode(respone.body);
-    var items = apiResp["data"]["result"]["mods"]["itemList"]["content"];
-    if (items != null)
-      // ignore: curly_braces_in_flow_control_structures
-      for (Map ele in items) {
-        var productId = ele['productId'];
-        var itemLink = "https://www.aliexpress.com/item/$productId.html";
-        var strPrice = ele["prices"]['salePrice']['formattedPrice'];
-        var title = ele["title"]['displayTitle'];
-        double rateBase = 0;
-
-        if (ele.containsKey("evaluation")) {
-          rateBase = ele["evaluation"]["starRating"].toDouble();
-        }
-
-        var img = "https:" + ele['image']['imgUrl'];
-
-        double price = stringToPrice(strPrice);
-
-        itemsList.add(item(
-            title, "AliExpress", img, rateBase, strPrice, itemLink, price));
+  final respone = await http.post(Uri.parse(url), headers: headers, body: body);
+  var apiResp = json.decode(respone.body);
+  var items = apiResp["data"]["result"]["mods"]["itemList"]["content"];
+  if (items != null)
+    // ignore: curly_braces_in_flow_control_structures
+    for (Map ele in items) {
+      var strPrice = "";
+      var productId = ele['productId'];
+      var itemLink = "https://www.aliexpress.com/item/$productId.html";
+      try {
+        strPrice = ele["prices"]['salePrice']['formattedPrice'];
+      } on NoSuchMethodError {
+        print(ele);
       }
+      var title = ele["title"]['displayTitle'];
+      double rateBase = 0;
+
+      if (ele.containsKey("evaluation")) {
+        print(ele["evaluation"]["starRating"]);
+        rateBase = ele["evaluation"]["starRating"].toDouble();
+      }
+
+      var img = "https:" + ele['image']['imgUrl'];
+      print('string to price');
+      double price = stringToPrice(strPrice);
+
+      itemsList.add(
+          item(title, "AliExpress", img, rateBase, strPrice, itemLink, price));
+    }
 
   return itemsList;
 }
