@@ -48,6 +48,9 @@ dependencies:
   shimmer: ^3.0.0
   intl: ^0.18.1
   uuid: ^3.0.7
+  provider: ^6.0.5
+  flutter_rating_bar: ^4.0.1
+  
 
 dev_dependencies:
   flutter_test:
@@ -89,10 +92,10 @@ flutter:
   fonts:
     - family: JosefinSans
       fonts:
-        - asset: lib\Assets\fonts\JosefinSans-Regular.ttf
+        - asset: assets/fonts/josefinSans.ttf
     - family: poppins
       fonts:
-        - asset: lib\Assets\fonts\Poppins-Regular.ttf
+        - asset: assets/fonts/poppins.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

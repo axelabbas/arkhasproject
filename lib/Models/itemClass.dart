@@ -1,4 +1,4 @@
-class item {
+class scrapedItem {
   late String title;
   late String type;
   late String? img;
@@ -7,6 +7,6 @@ class item {
   late String? strPrice;
   late String link;
 
-  item(this.title, this.type, this.img, this.rateBase, this.strPrice,
+  scrapedItem(this.title, this.type, this.img, this.rateBase, this.strPrice,
       this.link, this.price);
 }

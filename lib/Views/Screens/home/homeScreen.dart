@@ -1,18 +1,9 @@
-import 'package:arkhasproject/Ui/screens/search/compare.dart';
+
+import 'package:arkhasproject/Views/Screens/search/compare.dart';
 import 'package:flutter/material.dart';
 
-class homeScreen extends StatefulWidget {
+class homeScreen extends StatelessWidget {
   const homeScreen({super.key});
-
-  @override
-  State<homeScreen> createState() => _homeScreenState();
-}
-
-class _homeScreenState extends State<homeScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,21 +14,12 @@ class _homeScreenState extends State<homeScreen> {
           Directionality(
             textDirection: TextDirection.ltr,
             child: TextFormField(
-              onFieldSubmitted: (value) async {
-                await Navigator.of(context).push(MaterialPageRoute(
+              onFieldSubmitted: (value) {
+                Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => compareScreen(
-                          searchQuery: value,
-                        )));
+                      searchQuery: value,
+                    )));
               },
-              onChanged: ((value) => setState(() {
-                    //recommendeds
-
-                    // var output = searchInList(itemsList, value);
-                    // if (output == 'EMPTYLIST') {
-                    //   return;
-                    // }
-                    // currentItems = output.toList();
-                  })),
               initialValue: search,
               decoration: InputDecoration(
                   fillColor: Colors.grey.withOpacity(.2),

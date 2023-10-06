@@ -1,6 +1,5 @@
 double stringToPrice(String? price) {
   if (price == null) {
-    print("Is null");
     price = "0";
   }
   double intPrice = 0;
@@ -24,8 +23,6 @@ double stringToPrice(String? price) {
     var price2 = double.parse(prices[1]);
     intPrice = averagePrice(price1, price2);
   } else {
-    print(price);
-
     intPrice = double.parse(price);
   }
 
