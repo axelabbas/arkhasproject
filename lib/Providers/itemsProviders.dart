@@ -36,6 +36,9 @@ class scrapedItemsProvider with ChangeNotifier {
   getAllResults(query, pageNo) async {
     isLoading = true;
 
+    setLoading("Alibaba");
+    await fetchDataFromAlibaba(query, pageNo);
+
     setLoading("Miswag");
     await fetchDataFromMiswag(query, pageNo);
 
@@ -53,6 +56,7 @@ class scrapedItemsProvider with ChangeNotifier {
 
     isLoading = false;
     currentItems = scrapedItems;
+    print(error);
     notifyListeners();
   }
 
@@ -165,7 +169,7 @@ class scrapedItemsProvider with ChangeNotifier {
       miswagItems = itemsList;
       scrapedItems.addAll(miswagItems);
     } catch (e) {
-      error = e.toString();
+      error = "Miswag Error: ${e.toString()}";
     }
 
     return itemsList;
@@ -240,12 +244,12 @@ class scrapedItemsProvider with ChangeNotifier {
       aliexpressItems = itemsList;
       scrapedItems.addAll(aliexpressItems);
     } catch (e) {
-      error = e.toString();
+      error = "AliExpress Error: ${e.toString()}";
     }
     notifyListeners();
   }
 
-  fetchAlibaba(query, pageNo) async {
+  fetchDataFromAlibaba(query, pageNo) async {
     try {
       var headers = {
         "accept":
@@ -270,26 +274,28 @@ class scrapedItemsProvider with ChangeNotifier {
           .toString()
           .split("window.__page__data__config = ")[1]
           .split("window.__page__data = window.__page__data__config.props")[0]);
-      var listOfProducts = js["props"]["offerResultData"]["offerList"];
+      // print(json.encode(js));
+      var listOfProducts = js["props"]["offerResultData"]["offers"];
       if (listOfProducts != null) {
         for (final ele in listOfProducts) {
-          var title = ele['information']["title"]
+          var title = ele["title"]
               .replaceAll("<b>", "")
               .replaceAll("</b>", "")
               .replaceAll("<strong>", "")
               .replaceAll("</strong>", "");
-          var itemLink =
-              ele['information']["productUrl"].replaceAll("//www.", "www.");
+          print(title);
+          var itemLink = ele["productUrl"].replaceAll("//www.", "www.");
           var type = "AliBaba";
-          var img = "https:" + ele["image"]["mainImage"];
+          var img = "https:" + ele["mainImage"];
+          print(img);
           double rateBase = 0;
 
-          if (ele["reviews"]["supplierService"] == null) {
+          if (ele["reviewsScore"] == null) {
             rateBase = 0;
           } else {
-            rateBase = double.tryParse(ele["reviews"]["supplierService"])!;
+            rateBase = double.tryParse(ele["reviewsScore"])!;
           }
-          var strPrice = ele["tradePrice"]["price"];
+          var strPrice = ele["price"];
           double price = stringToPrice(strPrice);
 
           itemLink = "https://$itemLink";
@@ -297,10 +303,11 @@ class scrapedItemsProvider with ChangeNotifier {
               title, type, img, rateBase, strPrice, itemLink, price));
         }
       }
+      print(itemsList);
       alibabaItems = itemsList;
       scrapedItems.addAll(alibabaItems);
     } catch (e) {
-      error = e.toString();
+      error = "AliBaba Error: ${e.toString()}";
     }
     notifyListeners();
   }
@@ -369,7 +376,7 @@ class scrapedItemsProvider with ChangeNotifier {
       tamataItems = itemsList;
       scrapedItems.addAll(tamataItems);
     } catch (e) {
-      error = e.toString();
+      error = "Tamata Error: ${e.toString()}";
     }
     notifyListeners();
   }
@@ -435,7 +442,7 @@ class scrapedItemsProvider with ChangeNotifier {
       ebayItems = itemsList;
       scrapedItems.addAll(ebayItems);
     } catch (e) {
-      error = e.toString();
+      error = "Ebay Error: ${e.toString()}";
     }
     notifyListeners();
   }
@@ -536,7 +543,7 @@ class scrapedItemsProvider with ChangeNotifier {
       amazonItems = itemsList;
       scrapedItems.addAll(amazonItems);
     } catch (e) {
-      error = e.toString();
+      error = "Amazon Error: ${e.toString()}";
     }
     notifyListeners();
   }

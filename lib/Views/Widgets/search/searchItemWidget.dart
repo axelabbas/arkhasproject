@@ -1,5 +1,5 @@
 import 'package:arkhasproject/Models/itemClass.dart';
-import 'package:arkhasproject/Views/Widgets/starsWidget.dart';
+import 'package:arkhasproject/Views/Widgets/search/starsWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 

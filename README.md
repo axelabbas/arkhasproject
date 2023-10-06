@@ -1,7 +1,8 @@
 # arkhasproject
 
 A new Flutter project.
-
+## TO DO :
+restart category on search and show an error when a category/search is empty
 ## Getting Started
 
 This project is a starting point for a Flutter application.
